@@ -22,7 +22,7 @@ import BusinessRoutes from './Route/BussinessRoute.js';
 
 
 
-mongoose.connect('mongodb://localhost:27017/sanjay')
+mongoose.connect('mongodb+srv://dabadesanjay959:SNNwjLUlMH82CxZH@tyres-project.rdt8r.mongodb.net/')
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => console.error('Error connecting to MongoDB:', err));
 

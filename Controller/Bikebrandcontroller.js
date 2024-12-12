@@ -2,6 +2,7 @@
 import BikeBrand from "../Models/Bikebrand.js";
 import multer from "multer";
 import path from "path"
+import { BikeTyre } from "../Models/adminModel.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -197,6 +198,35 @@ const ActiveBikeBrand = async (req,res)=>{
   }
 }
 
+
+
+
+
+const getForBike = async (req, res) => {
+  try {
+    // Extract the brand ID or slug from the request parameters (or query)
+    const { brandId } = req.params; 
+    console.log(brandId) // Could be brandId or slug depending on your preference
+
+    // Find the car brand by ID (or slug) and populate the associated models
+    const brand = await BikeTyre.find({ bikeBrand: {$in:[brandId]}});
+
+    if (!brand) {
+      return res.status(404).json({ message: 'Brand not found' });
+    }
+
+    // Send the response back with the models of the selected brand
+    return res.status(200).json({
+      brand: brand,
+      
+    });
+
+  } catch (error) {
+    console.error('Error fetching brand and models:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 export{
     bikebrandAddFunction,
     bikebrandGetFunction,
@@ -204,6 +234,7 @@ export{
     bikebrandDeleteFunction,
     bikeeditGetFunction,
     bikeCount,
-    ActiveBikeBrand
+    ActiveBikeBrand,
+    getForBike
 }
 

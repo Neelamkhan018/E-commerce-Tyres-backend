@@ -2,6 +2,7 @@
 import CarBrand from "../Models/CarBrand.js";
 import multer from "multer";
 import path from "path"
+import { CarTyre } from "../Models/adminModel.js";
 
 
 
@@ -211,6 +212,34 @@ const activeCarBrand = async (req,res)=>{
 }
 
 
+const getForcar = async (req, res) => {
+  try {
+    // Extract the brand ID or slug from the request parameters (or query)
+    const { brandId } = req.params; 
+    console.log(brandId) // Could be brandId or slug depending on your preference
+
+    // Find the car brand by ID (or slug) and populate the associated models
+    const brand = await CarTyre.find({ carbrand: {$in:[brandId]}});
+
+    if (!brand) {
+      return res.status(404).json({ message: 'Brand not found' });
+    }
+
+    // Send the response back with the models of the selected brand
+    return res.status(200).json({
+      brand: brand,
+      
+    });
+
+  } catch (error) {
+    console.error('Error fetching brand and models:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+
 export {
     carAddFunction,
     carGetFunction,
@@ -218,7 +247,8 @@ export {
     carDeleteFunction,
     carbrandGetFunction,
     countFunction,
-    activeCarBrand
+    activeCarBrand,
+    getForcar
     
    
 }

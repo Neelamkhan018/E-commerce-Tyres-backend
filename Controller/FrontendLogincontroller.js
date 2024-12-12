@@ -49,7 +49,13 @@ const FrontendLogin = async (req,res)=>{
     res.status(500).json({ message: "Server error", error });
   }
 }
+
+
+
+
 export {
     FrontendRegister,
-    FrontendLogin
+    FrontendLogin,
+
 }
+

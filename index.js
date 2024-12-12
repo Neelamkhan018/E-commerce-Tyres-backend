@@ -19,6 +19,9 @@ import createdealer from './Route/DealerCreateRoute.js';
 import BankRoute from './Route/BankRoute.js';
 
 import BusinessRoutes from './Route/BussinessRoute.js';
+import customerRoute from './Route/Customerroute.js';
+import AccinfoRoute from './Route/AccinfoRoute.js';
+import CreateRoute from './Route/CreateCustomerRoute.js';
 
 
 
@@ -49,6 +52,11 @@ app.use("/",Frontlogin)
 app.use("/",createdealer)
 app.use("/",BankRoute)
 app.use("/",BusinessRoutes)
+app.use("/",customerRoute)
+app.use("/",AccinfoRoute)
+app.use("/",CreateRoute)
+
+
 
  app.listen(8000, ()=>{
     console.log('Server Is Running');

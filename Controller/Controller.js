@@ -229,20 +229,98 @@ const addProductFunction = async (req, res) => {
 
 // ------------------ Get Products ------------------------
 
-const showProductFunction = async(req,res)=>{
+// const showProductFunction = async(req,res)=>{
   
+//   try {
+//     // Fetch all car tyres and bike tyres asynchronously
+//     const [carTyres, bikeTyres] = await Promise.all([
+//       CarTyre.find().exec(),
+//       BikeTyre.find().exec(),
+//     ]);
+  
+//     // Helper function to validate if an ID is a valid ObjectId
+//     const isValidObjectId = (id) => {
+//       return ObjectId.isValid(id) && String(new ObjectId(id)) === id;
+//     };
+  
+//     // Helper function to map valid brand or model IDs to names
+//     const getNamesByIds = async (ids, model) => {
+//       const names = await Promise.all(
+//         ids
+//           .filter(isValidObjectId)  // Filter out invalid ObjectIds
+//           .map(async (id) => {
+//             const item = await model.findOne({ _id: new ObjectId(id) });
+//             return item ? item.name : null;
+//           })
+//       );
+//       return names.filter((name) => name); // Remove null values if any
+//     };
+  
+//     // Update car tyres with corresponding brand, model, and tyre brand names
+//     const updatedCarTyres = await Promise.all(
+//       (carTyres || []).map(async (tyre) => {
+//         const carBrandIds = tyre.carbrand[0].split(",");
+//         const carModelIds = tyre.carModel[0].split(",");
+//         const tyreBrandIds = tyre.tyreBrand[0].split(","); // Assuming tyreBrand is an array or string
+  
+//         const carBrandNames = await getNamesByIds(carBrandIds, CarBrand);
+//         const carModelNames = await getNamesByIds(carModelIds, CarModel);
+//         const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand); // Fetch tyreBrand names
+  
+//         return {
+//           ...tyre.toObject(),
+//           carbrand: carBrandNames,
+//           carModel: carModelNames,
+//           tyreBrand: tyreBrandNames, // Add tyreBrand names to the result
+//         };
+//       })
+//     );
+  
+//     // Update bike tyres with corresponding brand, model, and tyre brand names
+//     const updatedBikeTyres = await Promise.all(
+//       (bikeTyres || []).map(async (tyre) => {
+//         const bikeBrandIds = tyre.bikeBrand[0].split(",");
+//         const bikeModelIds = tyre.bikeModel[0].split(",");
+//         const tyreBrandIds = tyre.tyreBrand[0].split(","); // Assuming tyreBrand is an array or string
+  
+//         const bikeBrandNames = await getNamesByIds(bikeBrandIds, BikeBrand);
+//         const bikeModelNames = await getNamesByIds(bikeModelIds, BikeModel);
+//         const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand); // Fetch tyreBrand names
+  
+//         return {
+//           ...tyre.toObject(),
+//           bikeBrand: bikeBrandNames,
+//           bikeModel: bikeModelNames,
+//           tyreBrand: tyreBrandNames, // Add tyreBrand names to the result
+//         };
+//       })
+//     );
+  
+//     // Combine updated car and bike tyres
+//     const tyres = [...updatedCarTyres, ...updatedBikeTyres];
+  
+//     // Send response with the combined tyre data
+//     res.send(tyres);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send({ message: "Error getting tyres" });
+//   }
+// }
+
+
+const showProductFunction = async(req, res) => {
   try {
     // Fetch all car tyres and bike tyres asynchronously
     const [carTyres, bikeTyres] = await Promise.all([
       CarTyre.find().exec(),
       BikeTyre.find().exec(),
     ]);
-  
+
     // Helper function to validate if an ID is a valid ObjectId
     const isValidObjectId = (id) => {
       return ObjectId.isValid(id) && String(new ObjectId(id)) === id;
     };
-  
+
     // Helper function to map valid brand or model IDs to names
     const getNamesByIds = async (ids, model) => {
       const names = await Promise.all(
@@ -255,57 +333,62 @@ const showProductFunction = async(req,res)=>{
       );
       return names.filter((name) => name); // Remove null values if any
     };
-  
+
+    // Helper function to safely split and process IDs
+    const safeSplit = (value) => {
+      return value && typeof value === 'string' ? value.split(",") : [];
+    };
+
     // Update car tyres with corresponding brand, model, and tyre brand names
     const updatedCarTyres = await Promise.all(
       (carTyres || []).map(async (tyre) => {
-        const carBrandIds = tyre.carbrand[0].split(",");
-        const carModelIds = tyre.carModel[0].split(",");
-        const tyreBrandIds = tyre.tyreBrand[0].split(","); // Assuming tyreBrand is an array or string
-  
+        const carBrandIds = safeSplit(tyre.carbrand[0]);
+        const carModelIds = safeSplit(tyre.carModel[0]);
+        const tyreBrandIds = safeSplit(tyre.tyreBrand[0]);
+
         const carBrandNames = await getNamesByIds(carBrandIds, CarBrand);
         const carModelNames = await getNamesByIds(carModelIds, CarModel);
-        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand); // Fetch tyreBrand names
-  
+        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
+
         return {
           ...tyre.toObject(),
           carbrand: carBrandNames,
           carModel: carModelNames,
-          tyreBrand: tyreBrandNames, // Add tyreBrand names to the result
+          tyreBrand: tyreBrandNames,
         };
       })
     );
-  
+
     // Update bike tyres with corresponding brand, model, and tyre brand names
     const updatedBikeTyres = await Promise.all(
       (bikeTyres || []).map(async (tyre) => {
-        const bikeBrandIds = tyre.bikeBrand[0].split(",");
-        const bikeModelIds = tyre.bikeModel[0].split(",");
-        const tyreBrandIds = tyre.tyreBrand[0].split(","); // Assuming tyreBrand is an array or string
-  
+        const bikeBrandIds = safeSplit(tyre.bikeBrand[0]);
+        const bikeModelIds = safeSplit(tyre.bikeModel[0]);
+        const tyreBrandIds = safeSplit(tyre.tyreBrand[0]);
+
         const bikeBrandNames = await getNamesByIds(bikeBrandIds, BikeBrand);
         const bikeModelNames = await getNamesByIds(bikeModelIds, BikeModel);
-        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand); // Fetch tyreBrand names
-  
+        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
+
         return {
           ...tyre.toObject(),
           bikeBrand: bikeBrandNames,
           bikeModel: bikeModelNames,
-          tyreBrand: tyreBrandNames, // Add tyreBrand names to the result
+          tyreBrand: tyreBrandNames,
         };
       })
     );
-  
+
     // Combine updated car and bike tyres
     const tyres = [...updatedCarTyres, ...updatedBikeTyres];
-  
+
     // Send response with the combined tyre data
     res.send(tyres);
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Error getting tyres" });
   }
-}
+};
 
 
  

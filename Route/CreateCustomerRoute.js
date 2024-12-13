@@ -1,5 +1,6 @@
 import express from 'express';
-import { AddCreatecustomer} from '../Controller/CreateCustomercontroller.js';
+import { AddCreatecustomer } from '../Controller/CreateCustomerController.js';
+
 
 
 

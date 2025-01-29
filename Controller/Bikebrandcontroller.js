@@ -13,7 +13,10 @@ const storage = multer.diskStorage({
   }
 });
 
+
+
 const upload = multer({ storage: storage }).array('image', 10);
+
 
 // post api
 const bikebrandAddFunction = async(req,res)=>{

@@ -264,6 +264,55 @@ const GettyreFunction = async (req,res)=>{
 //   }
 // };
 
+// const getForTyre = async (req, res) => {
+//   try {
+//     const { brandId } = req.params;
+
+//     if (brandId === "All") {
+//       // Fetch all tyre brands, including only the 'name' field
+//       const tyreBrands = await TyreBrand.find().select('name');
+
+//       // Create an object to store tyres grouped by brand
+//       const brandTyres = {};
+
+//       // Loop through each tyre brand and fetch associated tyres
+//       for (const brand of tyreBrands) {
+//         // Fetch car tyres for the current brand, including only the 'name' field
+//         const carTyres = await CarTyre.find({ tyreBrand: brand._id }).select('name');
+
+//         // Fetch bike tyres for the current brand, including only the 'name' field
+//         const bikeTyres = await BikeTyre.find({ tyreBrand: brand._id }).select('name');
+
+//         // Store the tyre data in the brandTyres object
+//         brandTyres[brand._id] = {
+//           brandDetails: brand,  // Brand details with only 'name'
+//           carTyres,             // List of car tyres for this brand with only 'name'
+//           bikeTyres,            // List of bike tyres for this brand with only 'name'
+//         };
+//       }
+
+//       // Return the tyres grouped by brand, including only the 'name' field
+//       return res.status(200).json({
+//         brandTyres,
+//       });
+//     }
+
+//     // If not "All", fetch tyres for the specific brandId, including only the 'name' field
+//     const carTyres = await CarTyre.find({ tyreBrand: brandId }).select('name');
+//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandId }).select('name');
+
+//     // Return tyres for the specific brand with only 'name' field
+//     return res.status(200).json({
+//       carTyres,
+//       bikeTyres,
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching tyres for the brand:", error);
+//     return res.status(500).json({ message: "Server error" });
+//   }
+// };
+
 const getForTyre = async (req, res) => {
   try {
     const { brandId } = req.params;
@@ -314,7 +363,6 @@ const getForTyre = async (req, res) => {
 };
 
 
-
 export default getForTyre;
 
 
@@ -329,5 +377,6 @@ export default getForTyre;
     tyreactive,
     GettyreFunction,
     getForTyre
+
     
   }

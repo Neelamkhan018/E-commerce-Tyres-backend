@@ -187,4 +187,5 @@ export {
   bikeModelDeleteFunction,
   bikeEditGetFunction,
   ActiveBikeModel
+
 }

@@ -30,4 +30,4 @@ const AddAccinfo = async (req, res)=>{
 }
 
 
-export {AddAccinfo , }
+export {AddAccinfo }

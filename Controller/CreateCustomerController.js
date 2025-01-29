@@ -41,7 +41,6 @@ const AddCreatecustomer = async(req,res)=>{
 
 export {
     AddCreatecustomer,
-
 }
 
 

@@ -239,7 +239,13 @@ const addGstDetails = async (req,res)=>{
 
 }
 
-export { AddcreateOtp, AddCreateDealer,AddDealerLogin,AddLoginOtp,addGstDetails,GstgenerateOtp,GstVerifyOtp}
+export { AddcreateOtp, 
+  AddCreateDealer,
+  AddDealerLogin,
+  AddLoginOtp,
+  addGstDetails,
+  GstgenerateOtp,
+  GstVerifyOtp}
 
 
 

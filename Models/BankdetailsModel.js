@@ -10,4 +10,6 @@ const BankSchema = new mongoose.Schema({
 });
 
 const Bankmodel = mongoose.model('Bankmodeluser', BankSchema);
+
+
 export default Bankmodel;

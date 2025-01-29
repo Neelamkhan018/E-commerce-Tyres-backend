@@ -34,4 +34,7 @@ const Frontendlogin = new mongoose.Schema({
 });
 
 const frontlogin = mongoose.model('frontuser', Frontendlogin);
+
+
+
 export default frontlogin;

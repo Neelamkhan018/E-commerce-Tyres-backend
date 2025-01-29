@@ -11,4 +11,6 @@ const BillingAddressSchema = new mongoose.Schema({
 
 const BillingAddress = mongoose.model('BillingAddress', BillingAddressSchema);
 
+
+
 export default BillingAddress;

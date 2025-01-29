@@ -9,4 +9,6 @@ const GstSchema = new mongoose.Schema({
 });
 
 const Gstmodel = mongoose.model('Gstmodeluser', GstSchema);
+
+
 export default Gstmodel;

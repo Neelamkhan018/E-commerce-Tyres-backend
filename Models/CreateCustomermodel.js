@@ -9,4 +9,6 @@ const CustomerCreateAccount = new mongoose.Schema({
 });
 
 const Customeraccount = mongoose.model('customeraccount',CustomerCreateAccount);
+
+
 export default Customeraccount;

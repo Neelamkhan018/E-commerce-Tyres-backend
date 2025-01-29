@@ -10,4 +10,6 @@ const AccinfoSchema = new mongoose.Schema({
 
 const Accinfo = mongoose.model('Accinfomodel', AccinfoSchema);
 
+
+
 export default Accinfo;

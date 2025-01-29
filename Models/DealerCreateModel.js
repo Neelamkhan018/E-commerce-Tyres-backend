@@ -26,6 +26,8 @@ const DealerCreateAccount = new mongoose.Schema({
 
 const dealeraccountModel = mongoose.model('dealeraccountuser', DealerCreateAccount);
 
+
+
 export default dealeraccountModel;
 
 

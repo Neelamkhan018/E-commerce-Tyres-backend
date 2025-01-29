@@ -30,4 +30,6 @@ const  BikeModelSchema = new mongoose.Schema({
 
 const BikeModel = mongoose.model('BikeModel',  BikeModelSchema);
 
+
+
 export default BikeModel;

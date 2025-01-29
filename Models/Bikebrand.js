@@ -66,4 +66,6 @@ const BikeBrandSchema = new mongoose.Schema(
 
 const BikeBrand = mongoose.model('BikeBrand', BikeBrandSchema);
 
+
+
 export default BikeBrand;

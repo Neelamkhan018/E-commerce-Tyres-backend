@@ -256,6 +256,8 @@ bikeTyreSchema.methods.getStatus = function () {
 
 const BikeTyre = mongoose.model('BikeTyre', bikeTyreSchema);
 
+
+
 export { CarTyre, BikeTyre };
 
 

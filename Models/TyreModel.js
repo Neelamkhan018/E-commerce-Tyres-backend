@@ -25,4 +25,6 @@ const TyreBrandSchema = new mongoose.Schema({
 
 const TyreBrand = mongoose.model('TyreBrand', TyreBrandSchema);
 
+
+
 export default TyreBrand;

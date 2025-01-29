@@ -24,4 +24,7 @@ const BusinessSchema = new mongoose.Schema({
 });
 
 const Businessmodel = mongoose.model('Businessmodeluser', BusinessSchema);
+
+
+
 export default Businessmodel;

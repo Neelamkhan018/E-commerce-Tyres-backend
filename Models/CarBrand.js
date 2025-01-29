@@ -71,4 +71,6 @@ const CarbrandSchema = new mongoose.Schema({
 
 const CarBrand = mongoose.model('CarBrand', CarbrandSchema);
 
+
+
 export default CarBrand;

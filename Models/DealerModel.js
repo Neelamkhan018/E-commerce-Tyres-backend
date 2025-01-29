@@ -63,6 +63,9 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Dealer', contactSchema);
 
+
+
+
 export default Contact;
 
 

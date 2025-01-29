@@ -7,4 +7,6 @@ const DealerLogin = new mongoose.Schema({
 });
 
 const dealerloginModel = mongoose.model('dealeruser', DealerLogin);
+
+
 export default dealerloginModel;

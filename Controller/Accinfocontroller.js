@@ -2,7 +2,7 @@
 import express from "express";
 import Accinfo from "../Models/Accountinfomodel.js"; // Import the Accinfo model
 
-const AddAccinfo = async (req, res)=>{
+const AddAccinfo = async (req, res)=>{ 
     try {
         const { firstName, lastName, MobileNumber, email } = req.body;
     

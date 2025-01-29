@@ -1,6 +1,6 @@
 
 import BikeBrand from "../Models/Bikebrand.js";
-import multer from "multer";
+import multer from "multer"; 
 import path from "path"
 import { BikeTyre, CarTyre } from "../Models/adminModel.js";
 

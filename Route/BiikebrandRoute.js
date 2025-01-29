@@ -1,5 +1,5 @@
 import express from 'express'
-import { ActiveBikeBrand, bikebrandAddFunction, bikebrandDeleteFunction, bikebrandGetFunction, bikebrandUpdateFunction, bikeCount, bikeeditGetFunction, getForBike } from '../Controller/Bikebrandcontroller.js'
+import { ActiveBikeBrand, bikebrandAddFunction, bikebrandDeleteFunction, bikebrandGetFunction, bikebrandUpdateFunction, bikeCount, bikeeditGetFunction,  getForBike } from '../Controller/Bikebrandcontroller.js'
 
 
 const BikebrandRoute = express.Router()
@@ -13,5 +13,7 @@ const BikebrandRoute = express.Router()
 .put("/active-bikebrand/:id", ActiveBikeBrand)
 
 .get("/get-forbike/:brandId",getForBike) //forbike 
+
+
 
 export  default BikebrandRoute

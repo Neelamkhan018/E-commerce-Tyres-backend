@@ -1,58 +1,96 @@
 
 import express from "express";
 
-import Customer from "../Models/customermodel.js";
+import BillingAddress from "../Models/BillingAddressmodel.js";
+import ShippingAddress from "../Models/ShippingAddressmodel.js";
 
 
 
-const AddressBook = async (req , res)=>{
+const AddressBook = async (req, res) => {
   try {
     // Destructure data from the request body
     const {
       firstName,
       lastName,
-      company,
-      phoneNumber,
-      city,
+      streetAddress,
+      townOrCity,
       state,
-      zip,
-      country
+      pincode
     } = req.body;
 
-    // Create a new customer document
-    const newCustomer = new Customer({
+    // Create a new billing address document
+    const newAddress = new BillingAddress({
       firstName,
       lastName,
-      company,
-      phoneNumber,
-      city,
+      streetAddress,
+      townOrCity,
       state,
-      zip,
-      country
+      pincode
     });
 
-    // Save the customer to the database
-    await newCustomer.save();
+    // Save the address to the database
+    await newAddress.save();
 
     // Send a success response
     res.status(201).json({
-      message: 'Customer added successfully!',
-      customer: newCustomer
+      message: 'Billing address added successfully!',
+      address: newAddress
     });
   } catch (error) {
     // Handle errors (e.g., validation errors)
     console.error(error);
     res.status(500).json({
-      message: 'Error adding customer',
+      message: 'Error adding billing address',
       error: error.message
     });
   }
-}
+};
+
+
+const shipping = async (req, res) => {
+  try {
+    // Destructure data from the request body
+    const {
+      firstName,
+      lastName,
+      streetAddress,
+      townOrCity,
+      state,
+      pincode
+    } = req.body;
+
+    // Create a new billing address document
+    const newAddress = new ShippingAddress({
+      firstName,
+      lastName,
+      streetAddress,
+      townOrCity,
+      state,
+      pincode
+    });
+
+    // Save the address to the database
+    await newAddress.save();
+
+    // Send a success response
+    res.status(201).json({
+      message: 'Shipping address added successfully!',
+      address: newAddress
+    });
+  } catch (error) {
+    // Handle errors (e.g., validation errors)
+    console.error(error);
+    res.status(500).json({
+      message: 'Error adding Shipping address',
+      error: error.message
+    });
+  }
+};
 
 
 const getAddressBook = async (req, res) => {
   try {
-    const customer = await Customer.findOne({ email: req.query.email }); // Replace with actual user identification logic
+    const customer = await BillingAddress.findOne({ email: req.query.email }); // Replace with actual user identification logic
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }
@@ -66,4 +104,4 @@ const getAddressBook = async (req, res) => {
 
 
 
-export {AddressBook , getAddressBook }
+export {AddressBook , getAddressBook , shipping}

@@ -23,12 +23,16 @@ const AddcreateOtp = async (req, res) => {
 };
 
 
-// Function to send OTP via email
+// // Function to send OTP via email
 const sendOTPEmail = async (email, otp) => {
   // Instead of sending an email, just log or return the OTP
   console.log(`Generated OTP for ${email}: ${otp}`);
   return otp; // Here you would typically send the email
 };
+
+
+
+
 
 // Dealer account creation function
 const AddCreateDealer = async (req, res) => {
@@ -67,42 +71,88 @@ const AddCreateDealer = async (req, res) => {
 
 }
 
-// ------- Add Login -----------------
-const AddDealerLogin = async (req,res)=>{
 
-try {
+
+// ------- Add Login -----------------
+// const AddDealerLogin = async (req,res)=>{
+
+// try {
+//   const { emailOrMobile } = req.body; // Expect email or mobile input
+
+//   // Check if the provided email or mobile number exists in the database
+//   const existingEntry = await dealeraccountModel.findOne({
+//       $or: [{ email: emailOrMobile }, { mobileNumber: emailOrMobile }]
+//   });
+
+//   // If the entry does not exist, send an error response
+//   if (!existingEntry) {
+//       return res.status(404).json({ message: "Email or mobile number not found." });
+//   }
+
+//   // Generate OTP and store it temporarily
+//   const otp = generateOtp();
+//   otpStore[emailOrMobile] = otp;
+
+//   // Log OTP for testing purposes
+//   console.log(`OTP for ${emailOrMobile}: ${otp}`);
+
+//   // Here, you would send the OTP to the user's email or mobile via a service
+
+//   // Send back the OTP in the response
+//   res.status(200).json({ message: "OTP sent successfully", otp }); 
+// } catch (error) {
+//   res.status(500).json({ message: "Server error", error });
+// }
+
+
+// }
+
+
+const AddDealerLogin = async (req, res) => {
   const { emailOrMobile } = req.body; // Expect email or mobile input
 
-  // Check if the provided email or mobile number exists in the database
-  const existingEntry = await dealeraccountModel.findOne({
-      $or: [{ email: emailOrMobile }, { mobileNumber: emailOrMobile }]
-  });
+  try {
+    // Determine whether the input is a mobile number or an email
+    const isMobileNumber = /^\d+$/.test(emailOrMobile);
 
-  // If the entry does not exist, send an error response
-  if (!existingEntry) {
+    // Query the database based on whether it's a mobile number or email
+    const query = isMobileNumber
+      ? { mobileNumber: emailOrMobile } // Match mobile number
+      : { email: emailOrMobile }; // Match email
+
+    const existingEntry = await dealeraccountModel.findOne(query);
+
+    if (!existingEntry) {
       return res.status(404).json({ message: "Email or mobile number not found." });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // Store OTP temporarily in a store (you may want to save this securely in a database in a real application)
+    otpStore[emailOrMobile] = otp;
+
+    // Log OTP for testing purposes
+    console.log(`OTP for ${emailOrMobile}: ${otp}`);
+
+    // Here, you would send the OTP to the user's email or mobile via a service
+
+    return res.status(200).json({
+      message: `OTP sent to ${emailOrMobile}`,
+      otp, // Send OTP in the response
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Something went wrong. Please try again later.",
+    });
   }
-
-  // Generate OTP and store it temporarily
-  const otp = generateOtp();
-  otpStore[emailOrMobile] = otp;
-
-  // Log OTP for testing purposes
-  console.log(`OTP for ${emailOrMobile}: ${otp}`);
-
-  // Here, you would send the OTP to the user's email or mobile via a service
-
-  // Send back the OTP in the response
-  res.status(200).json({ message: "OTP sent successfully", otp }); 
-} catch (error) {
-  res.status(500).json({ message: "Server error", error });
-}
+};
 
 
-}
 
 
-// --------------------Add otp ------------------------
+// // --------------------Add otp ------------------------
 
 const AddLoginOtp = async(req,res)=>{
 
@@ -129,10 +179,9 @@ const AddLoginOtp = async(req,res)=>{
 } catch (error) {
     res.status(500).json({ message: "Server error", error });
 }
- 
+
+
 }
-
-
 
 // GST Deatils
 

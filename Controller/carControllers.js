@@ -2,7 +2,7 @@
 import CarBrand from "../Models/CarBrand.js";
 import multer from "multer";
 import path from "path"
-import { CarTyre } from "../Models/adminModel.js";
+import {  CarTyre } from "../Models/adminModel.js";
 
 
 
@@ -240,6 +240,7 @@ const getForcar = async (req, res) => {
 
 
 
+
 export {
     carAddFunction,
     carGetFunction,
@@ -248,7 +249,8 @@ export {
     carbrandGetFunction,
     countFunction,
     activeCarBrand,
-    getForcar
+    getForcar,
+
     
    
 }

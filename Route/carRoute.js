@@ -1,5 +1,5 @@
 import express from 'express'
-import {  activeCarBrand, carAddFunction,  carbrandGetFunction,  carDeleteFunction, carGetFunction, carUpdateFunction, countFunction, getForcar } from '../Controller/carControllers.js';
+import {  activeCarBrand, carAddFunction,  carbrandGetFunction,  carDeleteFunction, carGetFunction, carUpdateFunction, countFunction,  getForcar } from '../Controller/carControllers.js';
 
 
 
@@ -12,7 +12,9 @@ const carRoutes = express.Router()
 .get("/get-carbrands-with-model-counts",countFunction)
 .put("/active-carbrand/:id",activeCarBrand)
 
-.get("/get-forcar/:brandId",getForcar)
+.get("/get-forcar/:brandId",getForcar) //forcar 
+
+
 
 
 

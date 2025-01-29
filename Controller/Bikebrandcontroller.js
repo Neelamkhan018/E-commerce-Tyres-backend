@@ -2,7 +2,7 @@
 import BikeBrand from "../Models/Bikebrand.js";
 import multer from "multer";
 import path from "path"
-import { BikeTyre } from "../Models/adminModel.js";
+import { BikeTyre, CarTyre } from "../Models/adminModel.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -227,6 +227,9 @@ const getForBike = async (req, res) => {
   }
 };
 
+
+
+
 export{
     bikebrandAddFunction,
     bikebrandGetFunction,
@@ -235,6 +238,7 @@ export{
     bikeeditGetFunction,
     bikeCount,
     ActiveBikeBrand,
-    getForBike
+    getForBike,
+   
 }
 

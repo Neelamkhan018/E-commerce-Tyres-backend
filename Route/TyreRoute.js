@@ -1,5 +1,5 @@
 import express from 'express'
-import  {  GettyreFunction, tyreactive, tyreDeleteFunction, tyreeditGetFunction, tyreFunction, tyreGetFunction, tyreUpdateFunction } from '../Controller/TyreController.js'
+import  {  getForTyre, GettyreFunction, tyreactive, tyreDeleteFunction, tyreeditGetFunction, tyreFunction, tyreGetFunction, tyreUpdateFunction } from '../Controller/TyreController.js'
 
 
 const userRoute = express.Router()
@@ -13,5 +13,6 @@ const userRoute = express.Router()
 
 .get("/get-tyre/:id",GettyreFunction)  //image get api
 
+.get("/get-tyre/:brandId",getForTyre)
 
 export default userRoute

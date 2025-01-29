@@ -1,6 +1,7 @@
 import TyreBrand from "../Models/TyreModel.js";
 import multer from "multer";
 import path from "path"
+import { BikeTyre, CarTyre } from "../Models/adminModel.js";
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -223,6 +224,102 @@ const GettyreFunction = async (req,res)=>{
 
 }
 
+
+
+// const getForTyre = async (req, res) => {
+//   try {
+//     // Extract the brand ID from the request parameters
+//     const { brandId } = req.params;
+//     console.log('Request Params:', req.params); // Debugging: Log the incoming brandId
+
+//     // Find car tyres where the tyreBrand matches the brandId
+//     const carTyres = await CarTyre.find({ tyreBrand: brandId });
+
+//     // Find bike tyres where the tyreBrand matches the brandId
+//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandId });
+
+//     // Log the tyreBrand IDs from the car and bike tyres
+//     carTyres.forEach((tyre) => {
+//       console.log('Car Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
+//     });
+
+//     bikeTyres.forEach((tyre) => {
+//       console.log('Bike Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
+//     });
+
+//     // Check if any tyres were found
+//     if (!carTyres.length && !bikeTyres.length) {
+//       return res.status(404).json({ message: 'No tyres found for the specified brand' });
+//     }
+
+//     // Send the response with the found tyres (both car and bike tyres)
+//     return res.status(200).json({
+//       carTyres,
+//       bikeTyres,
+//     });
+
+//   } catch (error) {
+//     console.error('Error fetching tyres for the brand:', error);
+//     return res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+const getForTyre = async (req, res) => {
+  try {
+    const { brandId } = req.params;
+
+    if (brandId === "All") {
+      // Fetch all tyre brands, including only the 'name' field
+      const tyreBrands = await TyreBrand.find().select('name');
+
+      // Create an object to store tyres grouped by brand
+      const brandTyres = {};
+
+      // Loop through each tyre brand and fetch associated tyres
+      for (const brand of tyreBrands) {
+        // Fetch car tyres for the current brand, including only the 'name' field
+        const carTyres = await CarTyre.find({ tyreBrand: brand._id }).select('name');
+
+        // Fetch bike tyres for the current brand, including only the 'name' field
+        const bikeTyres = await BikeTyre.find({ tyreBrand: brand._id }).select('name');
+
+        // Store the tyre data in the brandTyres object
+        brandTyres[brand._id] = {
+          brandDetails: brand,  // Brand details with only 'name'
+          carTyres,             // List of car tyres for this brand with only 'name'
+          bikeTyres,            // List of bike tyres for this brand with only 'name'
+        };
+      }
+
+      // Return the tyres grouped by brand, including only the 'name' field
+      return res.status(200).json({
+        brandTyres,
+      });
+    }
+
+    // If not "All", fetch tyres for the specific brandId, including only the 'name' field
+    const carTyres = await CarTyre.find({ tyreBrand: brandId }).select('name');
+    const bikeTyres = await BikeTyre.find({ tyreBrand: brandId }).select('name');
+
+    // Return tyres for the specific brand with only 'name' field
+    return res.status(200).json({
+      carTyres,
+      bikeTyres,
+    });
+
+  } catch (error) {
+    console.error("Error fetching tyres for the brand:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export default getForTyre;
+
+
+
+
   export  {
     tyreFunction,
     tyreGetFunction,
@@ -230,6 +327,7 @@ const GettyreFunction = async (req,res)=>{
     tyreUpdateFunction,
     tyreeditGetFunction,
     tyreactive,
-    GettyreFunction
+    GettyreFunction,
+    getForTyre
     
   }

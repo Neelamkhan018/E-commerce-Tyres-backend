@@ -11,4 +11,4 @@ const CreateRoute = express.Router()
 
 
 
-export default CreateRoute;
+export default CreateRoute

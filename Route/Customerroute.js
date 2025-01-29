@@ -9,4 +9,4 @@ const customerRoute = express.Router()
 .get('/get-address',getAddressBook)
 
 
-export default customerRoute;
+export default customerRoute

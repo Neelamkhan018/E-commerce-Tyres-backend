@@ -16,4 +16,6 @@ const BikebrandRoute = express.Router()
 
 
 
-export  default BikebrandRoute
+
+
+export  default BikebrandRoute;

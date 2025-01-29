@@ -21,12 +21,14 @@ const route = express.Router()
 // Define the route to fetch tyre details by id, tyreType, and title
 // .get("/get-details/:id/:tyreType/:title", ShowDetails)
 
+
 .get("/get-details/:slug/:tyreType", ShowDetails)
+
 
 .put("/active-tyre/:id",TyreActive)
 
 .get("/get-checkbox", GetCheckbox)  //dealer api
 
 
-export default route
+export default route;
 

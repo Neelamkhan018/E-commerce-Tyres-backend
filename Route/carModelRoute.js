@@ -19,4 +19,4 @@ const carModelRoute = express.Router()
 .get("/get-model/:id",modelGet)
 
 
-export default carModelRoute
+export default carModelRoute;

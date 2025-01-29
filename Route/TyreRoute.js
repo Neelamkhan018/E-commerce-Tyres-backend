@@ -15,4 +15,7 @@ const userRoute = express.Router()
 
 .get("/get-tyre/:brandId",getForTyre)
 
-export default userRoute
+
+
+
+export default userRoute;

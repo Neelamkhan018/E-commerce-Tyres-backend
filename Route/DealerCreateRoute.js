@@ -13,4 +13,7 @@ const createdealer = express.Router()
 .post("/gst-generate-otp",GstgenerateOtp)
 .post("/gst-verify-otp",GstVerifyOtp)
 .post("/add-gst-details",addGstDetails)
+
+
+
 export default createdealer

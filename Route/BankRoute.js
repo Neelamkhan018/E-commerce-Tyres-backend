@@ -8,4 +8,5 @@ const BankRoute = express.Router()
 .post("/bank-details",AddBankDetails)
 
 
-export default BankRoute
+
+export default BankRoute;

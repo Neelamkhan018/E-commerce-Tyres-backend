@@ -15,4 +15,4 @@ const Dealerpage = express.Router()
 .post("/dealerfront-login")
 
 
-export default Dealerpage
+export default Dealerpage;

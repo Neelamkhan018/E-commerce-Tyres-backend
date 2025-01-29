@@ -20,4 +20,4 @@ const carRoutes = express.Router()
 
 
 
-export default carRoutes;
+export default carRoutes

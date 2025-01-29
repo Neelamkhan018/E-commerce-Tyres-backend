@@ -6,4 +6,4 @@ const BusinessRoutes = express.Router()
 .post("/add-business-details",AddBusinessDetails)
 .get("/get-addresses", getAddress)
 
-export default BusinessRoutes
+export default BusinessRoutes;

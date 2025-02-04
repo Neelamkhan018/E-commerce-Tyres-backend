@@ -363,6 +363,8 @@ const getForTyre = async (req, res) => {
 };
 
 
+
+
 export default getForTyre;
 
 

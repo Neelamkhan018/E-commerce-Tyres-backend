@@ -462,16 +462,23 @@ const showProductFunction = async(req, res) => {
  
 // --------------------- update show form ------------------------------
 
-const showFunction = async (req,res)=>{
 
+
+const showFunction = async (req, res) => {
   try {
     const { id, tyreType } = req.params;
 
     let tyreData;
     if (tyreType === 'car') {
-      tyreData = await CarTyre.findById(id);
+      tyreData = await CarTyre.findById(id)
+        .populate('carbrand')  // Populate carbrand
+        .populate('carModel')  // Populate carModel
+        .populate('tyreBrand'); // Populate tyreBrand
     } else if (tyreType === 'bike') {
-      tyreData = await BikeTyre.findById(id);
+      tyreData = await BikeTyre.findById(id)
+        .populate('bikeBrand')  // Populate bikeBrand
+        .populate('bikeModel')  // Populate bikeModel
+        .populate('tyreBrand'); // Populate tyreBrand
     }
 
     if (!tyreData) {
@@ -484,7 +491,7 @@ const showFunction = async (req,res)=>{
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
-}
+};
 
 
 

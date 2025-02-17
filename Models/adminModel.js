@@ -22,11 +22,14 @@ const carTyreSchema = new Schema({
     carModel: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CarModel' }], // Update to ObjectId references
 
 
-    // tyreBrand: [String],
-    tyreBrand: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'TyreBrand' // Reference to the TyreBrand model
-    }],
+    tyreBrand: [String],
+    // tyreBrand: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'TyreBrand' // Reference to the TyreBrand model
+    // }]
+
+    
+    
     
     width: Number,
     height: Number,
@@ -85,11 +88,11 @@ const bikeTyreSchema = new Schema({
 
     bikeBrand: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BikeBrand' }],  // Reference to BikeBrand
   bikeModel: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BikeModel' }],  
-    // tyreBrand: [String],
-    tyreBrand: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'TyreBrand' // Reference to the TyreBrand model
-    }],
+    tyreBrand: [String],
+    // tyreBrand: [{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'TyreBrand' // Reference to the TyreBrand model
+    // }],
     
     width: Number,
     height: Number,

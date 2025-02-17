@@ -1,21 +1,3 @@
-// import mongoose from "mongoose";
-
-// const Frontendlogin = new mongoose.Schema({
-//     name:String,
-//     lastname:String,
-//     companyname:String,
-//     phonenumber:Number,
-//     email:String,
-//     otp:Number,
-//     address:String,
-//     city:String,
-//     state:String,
-//     pincode:Number
-// });
-
-// const frontlogin = mongoose.model('frontenduser', Frontendlogin);
-// export default frontlogin;
-
 
 
 import mongoose from "mongoose";

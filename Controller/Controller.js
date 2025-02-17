@@ -1087,9 +1087,49 @@ const GetCheckbox = async(req,res) =>{
     res.status(500).json({ error: 'Failed to fetch tyres' });
   }
 
-
-
 }
+
+
+
+const bestdeal = async (req, res) => {
+  try {
+    // Fetch all active car and bike tyres
+    const carTyres = await CarTyre.find({ active: true });
+    const bikeTyres = await BikeTyre.find({ active: true });
+
+    // Function to calculate discount percentage
+    const calculateDiscount = (price, salesPrice) => {
+      return ((price - salesPrice) / price) * 100;
+    };
+
+    // Filter best deals (10% or 20% discount)
+    const bestCarDeals = carTyres.filter(tyre => {
+      if (tyre.price > 0 && tyre.Salesprice > 0) {
+        const discount = calculateDiscount(tyre.price, tyre.Salesprice);
+        return discount >= 10; // Only include 10%+ discount
+      }
+      return false;
+    });
+
+    const bestBikeDeals = bikeTyres.filter(tyre => {
+      if (tyre.price > 0 && tyre.Salesprice > 0) {
+        const discount = calculateDiscount(tyre.price, tyre.Salesprice);
+        return discount >= 10;
+      }
+      return false;
+    });
+
+    res.json({
+      success: true,
+      carDeals: bestCarDeals,
+      bikeDeals: bestBikeDeals
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server Error', error });
+  }
+};
+
 
 
 
@@ -1105,6 +1145,7 @@ export {
     TyreActive,
     ShowDetails,
     GetCheckbox,
+    bestdeal
 
    
     

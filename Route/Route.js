@@ -1,5 +1,5 @@
 import express from "express"
-import { addLoginFunction, addProductFunction, addRegisterFunction, deleteFunction, GetCheckbox, SearchFunction, ShowDetails, showFunction, showProductFunction, TyreActive, updateFunction } from "../Controller/Controller.js"
+import { addLoginFunction, addProductFunction, addRegisterFunction, bestdeal, deleteFunction, GetCheckbox, SearchFunction, ShowDetails, showFunction, showProductFunction, TyreActive, updateFunction } from "../Controller/Controller.js"
 
 
 const route = express.Router()
@@ -28,7 +28,7 @@ const route = express.Router()
 .put("/active-tyre/:id",TyreActive)
 
 .get("/get-checkbox", GetCheckbox)  //dealer api
-
+.get("/get-bestdeal",bestdeal)
 
 export default route;
 

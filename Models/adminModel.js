@@ -26,7 +26,7 @@ const carTyreSchema = new Schema({
     // tyreBrand: [{
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'TyreBrand' // Reference to the TyreBrand model
-    // }]
+    // }],
 
     
     

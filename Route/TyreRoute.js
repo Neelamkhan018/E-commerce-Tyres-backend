@@ -8,13 +8,9 @@ const userRoute = express.Router()
 .delete('/delete-tyre-brand/:id',tyreDeleteFunction)
 .put('/update-tyre-brand/:id',tyreUpdateFunction)
 .get("/get-tyre-brand/:id",tyreeditGetFunction)   //edit api
-
 .put("/active-tyres/:id",tyreactive)
-
 .get("/get-tyre/:id",GettyreFunction)  //image get api
-
 .get("/get-tyre/:brandId",getForTyre)
-
 
 
 

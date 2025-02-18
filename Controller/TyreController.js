@@ -181,34 +181,6 @@ const tyreFunction = async (req, res) => {
 
 
 const GettyreFunction = async (req,res)=>{
-
-  // const { id } = req.params;
-
-  // try {
-  //   // Find the tyre brand by its ID
-  //   const tyreBrand = await TyreBrand.findById(id);
-
-  //   if (!tyreBrand) {
-  //     return res.status(404).json({ message: "Tyre brand not found" });
-  //   }
-
-  //   // Map image filenames to full URLs
-  //   const imageUrls = tyreBrand.image.map(filename => `${req.protocol}://${req.get('host')}/uploads/tyrebrands/${filename}`);
-
-  //   // Send the tyre brand data, including the image URLs
-  //   res.status(200).json({
-  //     name: tyreBrand.name,
-  //     slug: tyreBrand.slug,
-  //     description: tyreBrand.description,
-  //     image: imageUrls, // Array of full image URLs
-  //   });
-  // } catch (err) {
-  //   console.error(err);
-  //   res.status(500).json({ message: "Error fetching tyre brand" });
-  // }
-
-  
-
   const { id } = req.params;
   try {
     const tyreBrand = await TyreBrand.findById(id); // Find tyreBrand by ID
@@ -226,240 +198,101 @@ const GettyreFunction = async (req,res)=>{
 
 
 
-// const getForTyre = async (req, res) => {
-//   try {
-//     // Extract the brand ID from the request parameters
-//     const { brandId } = req.params;
-//     console.log('Request Params:', req.params); // Debugging: Log the incoming brandId
-
-//     // Find car tyres where the tyreBrand matches the brandId
-//     const carTyres = await CarTyre.find({ tyreBrand: brandId });
-
-//     // Find bike tyres where the tyreBrand matches the brandId
-//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandId });
-
-//     // Log the tyreBrand IDs from the car and bike tyres
-//     carTyres.forEach((tyre) => {
-//       console.log('Car Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
-//     });
-
-//     bikeTyres.forEach((tyre) => {
-//       console.log('Bike Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
-//     });
-
-//     // Check if any tyres were found
-//     if (!carTyres.length && !bikeTyres.length) {
-//       return res.status(404).json({ message: 'No tyres found for the specified brand' });
-//     }
-
-//     // Send the response with the found tyres (both car and bike tyres)
-//     return res.status(200).json({
-//       carTyres,
-//       bikeTyres,
-//     });
-
-//   } catch (error) {
-//     console.error('Error fetching tyres for the brand:', error);
-//     return res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// const getForTyre = async (req, res) => {
-//   try {
-//     const { brandId } = req.params;
-
-//     if (brandId === "All") {
-//       // Fetch all tyre brands, including only the 'name' field
-//       const tyreBrands = await TyreBrand.find().select('name');
-
-//       // Create an object to store tyres grouped by brand
-//       const brandTyres = {};
-
-//       // Loop through each tyre brand and fetch associated tyres
-//       for (const brand of tyreBrands) {
-//         // Fetch car tyres for the current brand, including only the 'name' field
-//         const carTyres = await CarTyre.find({ tyreBrand: brand._id }).select('name');
-
-//         // Fetch bike tyres for the current brand, including only the 'name' field
-//         const bikeTyres = await BikeTyre.find({ tyreBrand: brand._id }).select('name');
-
-//         // Store the tyre data in the brandTyres object
-//         brandTyres[brand._id] = {
-//           brandDetails: brand,  // Brand details with only 'name'
-//           carTyres,             // List of car tyres for this brand with only 'name'
-//           bikeTyres,            // List of bike tyres for this brand with only 'name'
-//         };
-//       }
-
-//       // Return the tyres grouped by brand, including only the 'name' field
-//       return res.status(200).json({
-//         brandTyres,
-//       });
-//     }
-
-//     // If not "All", fetch tyres for the specific brandId, including only the 'name' field
-//     const carTyres = await CarTyre.find({ tyreBrand: brandId }).select('name');
-//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandId }).select('name');
-
-//     // Return tyres for the specific brand with only 'name' field
-//     return res.status(200).json({
-//       carTyres,
-//       bikeTyres,
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching tyres for the brand:", error);
-//     return res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-// const getForTyre = async (req, res) => {
-//   try {
-//     const { brandId } = req.params;
-
-//     if (brandId === "All") {
-//       // Fetch all tyre brands, including only the 'name' field
-//       const tyreBrands = await TyreBrand.find().select('name');
-
-//       // Create an object to store tyres grouped by brand
-//       const brandTyres = {};
-
-//       // Loop through each tyre brand and fetch associated tyres
-//       for (const brand of tyreBrands) {
-//         // Fetch car tyres for the current brand, including only the 'name' field
-//         const carTyres = await CarTyre.find({ tyreBrand: brand._id }).select('name');
-
-//         // Fetch bike tyres for the current brand, including only the 'name' field
-//         const bikeTyres = await BikeTyre.find({ tyreBrand: brand._id }).select('name');
-
-//         // Store the tyre data in the brandTyres object
-//         brandTyres[brand._id] = {
-//           brandDetails: brand,  // Brand details with only 'name'
-//           carTyres,             // List of car tyres for this brand with only 'name'
-//           bikeTyres,            // List of bike tyres for this brand with only 'name'
-//         };
-//       }
-
-//       // Return the tyres grouped by brand, including only the 'name' field
-//       return res.status(200).json({
-//         brandTyres,
-//       });
-//     }
-
-//     // If not "All", fetch tyres for the specific brandId, including only the 'name' field
-//     const carTyres = await CarTyre.find({ tyreBrand: brandId }).select('name');
-//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandId }).select('name');
-
-//     // Return tyres for the specific brand with only 'name' field
-//     return res.status(200).json({
-//       carTyres,
-//       bikeTyres,
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching tyres for the brand:", error);
-//     return res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-// const getForTyre = async (req, res) => {
-//   try {
-//     const { brandId } = req.params;
-
-//     if (brandId === "All") {
-//       // Fetch all tyre brands, including only the 'name' field
-//       const tyreBrands = await TyreBrand.find().select("name");
-
-//       const brandTyres = {};
-
-//       for (const brand of tyreBrands) {
-//         // Fetch car tyres and populate brand details
-//         const carTyres = await CarTyre.find({ tyreBrand: brand._id })
-//           .select("name model width height price tyreBrand")
-//           .populate("tyreBrand", "name");
-
-//         // Fetch bike tyres and populate brand details
-//         const bikeTyres = await BikeTyre.find({ tyreBrand: brand._id })
-//           .select("name model width height price tyreBrand")
-//           .populate("tyreBrand", "name");
-
-//         brandTyres[brand._id] = {
-//           brandDetails: brand, // Brand details with only 'name'
-//           carTyres,
-//           bikeTyres,
-//         };
-//       }
-
-//       return res.status(200).json({ brandTyres });
-//     }
-
-//     // Convert brandId to ObjectId
-//     const brandObjectId = mongoose.Types.ObjectId(brandId);
-
-//     // Fetch tyres for the specific brand
-//     const carTyres = await CarTyre.find({ tyreBrand: brandObjectId })
-//       .select("name model width height price tyreBrand")
-//       .populate("tyreBrand", "name");
-
-//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandObjectId })
-//       .select("name model width height price tyreBrand")
-//       .populate("tyreBrand", "name");
-
-//     return res.status(200).json({ carTyres, bikeTyres });
-//   } catch (error) {
-//     console.error("Error fetching tyres for the brand:", error);
-//     return res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-
-// const getForTyre = async (req, res) => {
-//   try {
-//     const { brandId } = req.query;
-//     let carTyres, bikeTyres;
-
-//     if (brandId === "All") {
-//         // Fetch all car and bike tyres
-//         carTyres = await CarTyre.find({ active: true }).populate("tyreBrand");
-//         bikeTyres = await BikeTyre.find({ active: true }).populate("tyreBrand");
-//     } else {
-//         // Fetch tyres based on selected brand
-//         carTyres = await CarTyre.find({ tyreBrand: brandId, active: true }).populate("tyreBrand");
-//         bikeTyres = await BikeTyre.find({ tyreBrand: brandId, active: true }).populate("tyreBrand");
-//     }
-
-//     res.json({ carTyres, bikeTyres });
-// } catch (error) {
-//     console.error("Error fetching tyres:", error);
-//     res.status(500).json({ message: "Server error" });
-// }
-// };
-
 const getForTyre = async (req, res) => {
   try {
-      const { brandId } = req.params;
-      
-      let carTyres = [];
-      let bikeTyres = [];
+    // Extract the brand ID from the request parameters
+    const { brandId } = req.params;
+    console.log('Request Params:', req.params); // Debugging: Log the incoming brandId
 
-      if (brandId === "All") {
-          // Fetch all tyres
-          carTyres = await CarTyre.find({ active: true }).populate("tyreBrand");
-          bikeTyres = await BikeTyre.find({ active: true }).populate("tyreBrand");
-      } else {
-          // Fetch tyres for a specific brand
-          carTyres = await CarTyre.find({ tyreBrand: brandId, active: true }).populate("tyreBrand");
-          bikeTyres = await BikeTyre.find({ tyreBrand: brandId, active: true }).populate("tyreBrand");
-      }
+    // Find car tyres where the tyreBrand matches the brandId
+    const carTyres = await CarTyre.find({ tyreBrand: brandId });
 
-      res.status(200).json({ carTyres, bikeTyres });
+    // Find bike tyres where the tyreBrand matches the brandId
+    const bikeTyres = await BikeTyre.find({ tyreBrand: brandId });
+
+    // Log the tyreBrand IDs from the car and bike tyres
+    carTyres.forEach((tyre) => {
+      console.log('Car Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
+    });
+
+    bikeTyres.forEach((tyre) => {
+      console.log('Bike Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
+    });
+
+    // Check if any tyres were found
+    if (!carTyres.length && !bikeTyres.length) {
+      return res.status(404).json({ message: 'No tyres found for the specified brand' });
+    }
+
+    // Send the response with the found tyres (both car and bike tyres)
+    return res.status(200).json({
+      carTyres,
+      bikeTyres,
+    });
+
   } catch (error) {
-      console.error("Error fetching tyres:", error);
-      res.status(500).json({ message: "Server error" });
+    console.error('Error fetching tyres for the brand:', error);
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
 
+// const getForTyre = async (req, res) => {
+//   try {
+//       const { brandId } = req.params;
+      
+//       let carTyres = [];
+//       let bikeTyres = [];
+
+//       if (brandId === "All") {
+//           // Fetch all active tyres and populate brand details
+//           carTyres = await CarTyre.find({ active: true }).populate("tyreBrand");
+//           bikeTyres = await BikeTyre.find({ active: true }).populate("tyreBrand");
+//       } else {
+//           // Fetch tyres matching the brand ID
+//           carTyres = await CarTyre.find({ 
+//               tyreBrand: brandId, // Now correctly matches ObjectId
+//               active: true 
+//           }).populate("tyreBrand");
+          
+//           bikeTyres = await BikeTyre.find({ 
+//               tyreBrand: brandId, 
+//               active: true 
+//           }).populate("tyreBrand");
+//       }
+
+//       res.status(200).json({ carTyres, bikeTyres });
+//   } catch (error) {
+//       console.error("Error fetching tyres:", error);
+//       res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+
+// const getForTyre = async (req, res) => {
+//   try {
+//     const { brandId } = req.params;
+
+//     // Find tyres across both vehicle types that match the tyre brand
+//     const carTyres = await CarTyre.find({ tyreBrand: { $in: [brandId] } });
+//     const bikeTyres = await BikeTyre.find({ tyreBrand: { $in: [brandId] } });
+    
+//     const allTyres = [...carTyres, ...bikeTyres];
+
+//     if (allTyres.length === 0) {
+//       return res.status(404).json({ message: 'No tyres found for this tyre brand' });
+//     }
+
+//     return res.status(200).json({
+//       count: allTyres.length,
+//       tyres: allTyres,
+//     });
+
+//   } catch (error) {
+//     console.error('Error fetching tyres by tyre brand:', error);
+//     return res.status(500).json({ message: 'Server error', error: error.message });
+//   }
+// };
 
 
   export  {
@@ -471,6 +304,4 @@ const getForTyre = async (req, res) => {
     tyreactive,
     GettyreFunction,
     getForTyre
-
-    
   }

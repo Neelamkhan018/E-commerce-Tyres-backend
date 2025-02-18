@@ -463,38 +463,83 @@ const showProductFunction = async(req, res) => {
 // --------------------- update show form ------------------------------
 
 
-
 const showFunction = async (req, res) => {
   try {
     const { id, tyreType } = req.params;
 
     let tyreData;
     if (tyreType === 'car') {
-      tyreData = await CarTyre.findById(id)
-        .populate('carbrand')  // Populate carbrand
-        .populate('carModel')  // Populate carModel
-        .populate('tyreBrand'); // Populate tyreBrand
+      tyreData = await CarTyre.findById(id);
     } else if (tyreType === 'bike') {
-      tyreData = await BikeTyre.findById(id)
-        .populate('bikeBrand')  // Populate bikeBrand
-        .populate('bikeModel')  // Populate bikeModel
-        .populate('tyreBrand'); // Populate tyreBrand
+      tyreData = await BikeTyre.findById(id);
     }
 
     if (!tyreData) {
       return res.status(404).json({ message: 'Tyre not found' });
     }
 
-    // Send the tyre data as response
-    res.json(tyreData);
+    // Convert all IDs to names
+    const convertedData = await convertIdsToNames(tyreType, tyreData._doc);
+    
+    res.json(convertedData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
+// Helper function to convert IDs to names
+async function convertIdsToNames(tyreType, data) {
+  // Common conversion for tyreBrand
+  const tyreBrandNames = await Promise.all(
+    data.tyreBrand.map(async (id) => {
+      const brand = await TyreBrand.findById(id);
+      return brand ? brand.name : id; // Return ID if brand not found
+    })
+  );
 
+  if (tyreType === 'car') {
+    const [carBrands, carModels] = await Promise.all([
+      Promise.all(data.carbrand.map(async (id) => {
+        const brand = await CarBrand.findById(id);
+        return brand ? brand.name : id;
+      })),
+      Promise.all(data.carModel.map(async (id) => {
+        const model = await CarModel.findById(id);
+        return model ? model.name : id;
+      }))
+    ]);
 
+    return {
+      ...data,
+      carbrand: carBrands,
+      carModel: carModels,
+      tyreBrand: tyreBrandNames
+    };
+  }
+
+  if (tyreType === 'bike') {
+    const [bikeBrands, bikeModels] = await Promise.all([
+      Promise.all(data.bikeBrand.map(async (id) => {
+        const brand = await BikeBrand.findById(id);
+        return brand ? brand.name : id;
+      })),
+      Promise.all(data.bikeModel.map(async (id) => {
+        const model = await BikeModel.findById(id);
+        return model ? model.name : id;
+      }))
+    ]);
+
+    return {
+      ...data,
+      bikeBrand: bikeBrands,
+      bikeModel: bikeModels,
+      tyreBrand: tyreBrandNames
+    };
+  }
+
+  return data;
+}
 
 // //   // --------------UPDATE FUNCTION ----------------------
 

@@ -499,142 +499,6 @@ const showFunction = async (req, res) => {
 // //   // --------------UPDATE FUNCTION ----------------------
 
 
-// const updateFunction = async (req, res) => {
-//   // Ensure multer handles file upload before processing request
-//   upload(req, res, async function (err) {
-//     if (err instanceof multer.MulterError) {
-//       console.error("Multer error:", err);
-//       return res.status(500).send({ message: "Multer error: " + err.message });
-//     } else if (err) {
-//       console.error("Unknown error:", err);
-//       return res.status(500).send({ message: "Unknown error: " + err.message });
-//     }
-
-//     // Check if body and files are available
-//     if (!req.body || !req.files) {
-//       return res.status(400).send({ message: "No data or files uploaded" });
-//     }
-//     console.log(req.body);
-//     console.log(req.files);
-    
-    
-
-//     const { id } = req.params;
-//     const {
-//       title, tyreType, carbrand, addresses: rawAddresses, pinCode, details, carModel,
-//       bikeBrand, bikeModel, tyreBrand, tyreModel, width, height, customs,
-//       seasons, speedRating, loadCapacity, price, Salesprice, description,
-//       description1, warranty, city, state, manufactureMonth, manufactureYear,
-//       fronttyre, reartyre,  quantity, material,avatarImages,thumb1Images,thumb2Images,thumb3Images,thumb4Images,thumb5Images,thumb6Images
-//     } = req.body;
-
-//     let TyreModel;
-
-//     // Determine tyre model (car or bike)
-//     switch (tyreType) {
-//       case 'car':
-//         TyreModel = CarTyre;
-//         break;
-//       case 'bike':
-//         TyreModel = BikeTyre;
-//         break;
-//       default:
-//         return res.status(400).send({ message: 'Invalid tyre type' });
-//     }
-
-//     // Parse addresses if needed
-//     let addresses = [];
-//     try {
-//       addresses = Array.isArray(rawAddresses) ? rawAddresses : JSON.parse(rawAddresses);
-//       console.log("Parsed Addresses:", addresses);
-//     } catch (e) {
-//       console.error("Error parsing addresses:", e);
-//       return res.status(400).send({ message: "Invalid addresses format" });
-//     }
-
-//     try {
-//       // Find the existing tyre
-//       const existingTyre = await TyreModel.findById(id);
-//       if (!existingTyre) {
-//         return res.status(404).send({ message: `Tyre with ID ${id} not found `});
-//       }
-
-//       // Initialize image variables with existing values
-//       let avatarImages = existingTyre.avatarImages || '';
-//       let thumb1Images = existingTyre.thumb1Images || '';
-//       let thumb2Images = existingTyre.thumb2Images || '';
-//       let thumb3Images = existingTyre.thumb3Images || '';
-//       let thumb4Images = existingTyre.thumb4Images || '';
-//       let thumb5Images = existingTyre.thumb5Images || '';
-//       let thumb6Images = existingTyre.thumb6Images || '';
-
-//       // Handle image uploads
-//       if (req.files) {
-//         avatarImages = req.files['avatar'] ? req.files['avatar'][0].filename : avatarImages;
-//         thumb1Images = req.files['thumb1'] ? req.files['thumb1'][0].filename : thumb1Images;
-//         thumb2Images = req.files['thumb2'] ? req.files['thumb2'][0].filename : thumb2Images;
-//         thumb3Images = req.files['thumb3'] ? req.files['thumb3'][0].filename : thumb3Images;
-//         thumb4Images = req.files['thumb4'] ? req.files['thumb4'][0].filename : thumb4Images;
-//         thumb5Images = req.files['thumb5'] ? req.files['thumb5'][0].filename : thumb5Images;
-//         thumb6Images = req.files['thumb6'] ? req.files['thumb6'][0].filename : thumb6Images;
-//       }
-//       // Update the tyre
-//       const updatedTyre = await TyreModel.findByIdAndUpdate(
-//         id,
-//         {
-//           title,
-//           carbrand,
-//           carModel,
-//           tyreType,
-//           bikeBrand,
-//           bikeModel,
-//           tyreBrand,
-//           tyreModel,
-//           width,
-//           addresses,
-//           height,
-//           customs,
-//           seasons,
-//           fronttyre,
-//           reartyre,
-//           speedRating,
-//           loadCapacity,
-//           material,
-//           avatarImages,
-//           thumb1Images,
-//           thumb2Images,
-//           thumb3Images,
-//           thumb4Images,
-//           thumb5Images,
-//           thumb6Images,
-//           manufactureMonth,
-//           manufactureYear,
-//           price,
-//           Salesprice,
-//           description,
-//           description1,
-//           warranty,
-//           quantity,
-//           city,
-//           state,
-//           pinCode,
-//           details,
-//         },
-//         { new: true } // Return the updated document
-//       );
-
-//       if (updatedTyre) {
-//         res.send({ message: `${tyreType.charAt(0).toUpperCase()}${tyreType.slice(1)} tyre with ID ${id} updated successfully, updatedTyre `});
-//       } else {
-//         res.status(404).send({ message: `Tyre with ID ${id} not found `});
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).send({ message: `Error updating ${tyreType} tyre `});
-//     }
-//   });
-// };
-
 
 const updateFunction = async (req, res) => {
   // Ensure multer handles file upload before processing request
@@ -1100,6 +964,7 @@ const bestdeal = async (req, res) => {
     // Function to calculate discount percentage
     const calculateDiscount = (price, salesPrice) => {
       return ((price - salesPrice) / price) * 100;
+
     };
 
     // Filter best deals (10% or 20% discount)
@@ -1146,7 +1011,4 @@ export {
     ShowDetails,
     GetCheckbox,
     bestdeal
-
-   
-    
 }

@@ -198,43 +198,43 @@ const GettyreFunction = async (req,res)=>{
 
 
 
-const getForTyre = async (req, res) => {
-  try {
-    // Extract the brand ID from the request parameters
-    const { brandId } = req.params;
-    console.log('Request Params:', req.params); // Debugging: Log the incoming brandId
+// const getForTyre = async (req, res) => {
+//   try {
+//     // Extract the brand ID from the request parameters
+//     const { brandId } = req.params;
+//     console.log('Request Params:', req.params); // Debugging: Log the incoming brandId
 
-    // Find car tyres where the tyreBrand matches the brandId
-    const carTyres = await CarTyre.find({ tyreBrand: brandId });
+//     // Find car tyres where the tyreBrand matches the brandId
+//     const carTyres = await CarTyre.find({ tyreBrand: brandId });
 
-    // Find bike tyres where the tyreBrand matches the brandId
-    const bikeTyres = await BikeTyre.find({ tyreBrand: brandId });
+//     // Find bike tyres where the tyreBrand matches the brandId
+//     const bikeTyres = await BikeTyre.find({ tyreBrand: brandId });
 
-    // Log the tyreBrand IDs from the car and bike tyres
-    carTyres.forEach((tyre) => {
-      console.log('Car Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
-    });
+//     // Log the tyreBrand IDs from the car and bike tyres
+//     carTyres.forEach((tyre) => {
+//       console.log('Car Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
+//     });
 
-    bikeTyres.forEach((tyre) => {
-      console.log('Bike Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
-    });
+//     bikeTyres.forEach((tyre) => {
+//       console.log('Bike Tyre Brand ID:', tyre.tyreBrand); // This will log the ObjectId
+//     });
 
-    // Check if any tyres were found
-    if (!carTyres.length && !bikeTyres.length) {
-      return res.status(404).json({ message: 'No tyres found for the specified brand' });
-    }
+//     // Check if any tyres were found
+//     if (!carTyres.length && !bikeTyres.length) {
+//       return res.status(404).json({ message: 'No tyres found for the specified brand' });
+//     }
 
-    // Send the response with the found tyres (both car and bike tyres)
-    return res.status(200).json({
-      carTyres,
-      bikeTyres,
-    });
+//     // Send the response with the found tyres (both car and bike tyres)
+//     return res.status(200).json({
+//       carTyres,
+//       bikeTyres,
+//     });
 
-  } catch (error) {
-    console.error('Error fetching tyres for the brand:', error);
-    return res.status(500).json({ message: 'Server error' });
-  }
-};
+//   } catch (error) {
+//     console.error('Error fetching tyres for the brand:', error);
+//     return res.status(500).json({ message: 'Server error' });
+//   }
+// };
 
 
 // const getForTyre = async (req, res) => {
@@ -269,30 +269,41 @@ const getForTyre = async (req, res) => {
 // };
 
 
-// const getForTyre = async (req, res) => {
-//   try {
-//     const { brandId } = req.params;
-
-//     // Find tyres across both vehicle types that match the tyre brand
-//     const carTyres = await CarTyre.find({ tyreBrand: { $in: [brandId] } });
-//     const bikeTyres = await BikeTyre.find({ tyreBrand: { $in: [brandId] } });
+const getForTyre = async (req, res) => {
+  try {
+    const { brandId } = req.params;
     
-//     const allTyres = [...carTyres, ...bikeTyres];
+    // Convert brandId to ObjectId
+    if (!mongoose.Types.ObjectId.isValid(brandId)) {
+      return res.status(400).json({ message: "Invalid brand ID format" });
+    }
+    const objectId = new mongoose.Types.ObjectId(brandId);
 
-//     if (allTyres.length === 0) {
-//       return res.status(404).json({ message: 'No tyres found for this tyre brand' });
-//     }
+    console.log("Fetching tyres for brand ID:", objectId);
 
-//     return res.status(200).json({
-//       count: allTyres.length,
-//       tyres: allTyres,
-//     });
+    const carTyres = await CarTyre.find({ tyreBrand: objectId });
+    const bikeTyres = await BikeTyre.find({ tyreBrand: objectId });
 
-//   } catch (error) {
-//     console.error('Error fetching tyres by tyre brand:', error);
-//     return res.status(500).json({ message: 'Server error', error: error.message });
-//   }
-// };
+    console.log("Car Tyres Found:", carTyres);
+    console.log("Bike Tyres Found:", bikeTyres);
+
+    const allTyres = [...carTyres, ...bikeTyres];
+
+    if (allTyres.length === 0) {
+      return res.status(404).json({ message: "No tyres found for this tyre brand" });
+    }
+
+    return res.status(200).json({
+      count: allTyres.length,
+      tyres: allTyres,
+    });
+
+  } catch (error) {
+    console.error("Error fetching tyres by tyre brand:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 
 
   export  {

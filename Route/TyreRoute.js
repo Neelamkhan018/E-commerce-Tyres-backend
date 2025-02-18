@@ -10,7 +10,7 @@ const userRoute = express.Router()
 .get("/get-tyre-brand/:id",tyreeditGetFunction)   //edit api
 .put("/active-tyres/:id",tyreactive)
 .get("/get-tyre/:id",GettyreFunction)  //image get api
-.get("/get-tyre/:brandId",getForTyre)
+.get("/get-fortyre/:brandId",getForTyre)
 
 
 

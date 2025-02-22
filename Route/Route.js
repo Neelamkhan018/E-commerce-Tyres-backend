@@ -1,5 +1,5 @@
 import express from "express"
-import { addLoginFunction, addProductFunction, addRegisterFunction, bestdeal, deleteFunction, GetCheckbox, SearchFunction, ShowDetails, showFunction, showProductFunction, TyreActive, updateFunction } from "../Controller/Controller.js"
+import { addLoginFunction, addProductFunction, addRegisterFunction, bestdeal, deleteFunction, GetCheckbox, Searchcarbike, SearchFunction, ShowDetails, showFunction, showProductFunction, TyreActive, updateFunction } from "../Controller/Controller.js"
 
 
 const route = express.Router()
@@ -10,7 +10,8 @@ const route = express.Router()
 .get("/get-tyre/:id/:tyreType",showFunction)
 .put("/update-tyres/:id/:tyreType",updateFunction)
 .delete("/api/tyres/:type/:id",deleteFunction)
-.get('/search/:type/:width/:height/:customs/:seasons', SearchFunction)    //search in mainheader component   
+.get('/searchsize/:width/:height/:customs/:seasons', SearchFunction)
+.get('/searchcarbike/:tyreType/:brand/:model/:tyreBrand/:seasons', Searchcarbike)
 .get("/get-details/:slug/:tyreType", ShowDetails)
 .put("/active-tyre/:id",TyreActive)
 .get("/get-checkbox", GetCheckbox)  //dealer api

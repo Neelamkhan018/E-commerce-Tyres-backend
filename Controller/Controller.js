@@ -723,21 +723,9 @@ const deleteFunction = async (req,res)=>{
 }
 
 
-const SearchFunction = async (req, res) => {
-  const tyreType = req.params.type;
-  const width = req.params.width || '';
-  const height = req.params.height || '';
-  const customs = req.params.customs || '';
-  const seasons = req.params.seasons || '';
 
-  let TyreModel;
-  if (tyreType === 'car') {
-    TyreModel = CarTyre;
-  } else if (tyreType === 'bike') {
-    TyreModel = BikeTyre;
-  } else {
-    return res.status(400).json({ message: 'Invalid tyre type' });
-  }
+const SearchFunction = async (req, res) => {
+  const { width, height, customs, seasons } = req.params;
 
   try {
     const query = {};
@@ -758,7 +746,13 @@ const SearchFunction = async (req, res) => {
       query.seasons = seasons;
     }
 
-    const tyres = await TyreModel.find(query);
+    // Fetch tyres from both CarTyre and BikeTyre models
+    const carTyres = await CarTyre.find(query);
+    const bikeTyres = await BikeTyre.find(query);
+
+    // Combine results
+    const tyres = [...carTyres, ...bikeTyres];
+
     res.json(tyres);
   } catch (err) {
     console.error(err);
@@ -767,6 +761,42 @@ const SearchFunction = async (req, res) => {
 };
 
 
+const Searchcarbike = async (req, res) => {
+  try {
+    const { tyreType, brand, model, tyreBrand, seasons } = req.params;
+    
+    console.log("Received parameters:", { tyreType, brand, model, tyreBrand, seasons });
+
+    let query = { active: true };
+
+    if (tyreType === "car") {
+        if (brand) query.carbrand = { $in: [brand] }; // Use $in for array fields
+        if (model) query.carModel = { $in: [model] };
+        if (tyreBrand) query.tyreBrand = { $in: [tyreBrand] };
+        if (seasons) query.seasons = seasons; // Assuming seasons is a string
+
+        console.log("Query:", query); // Log the constructed query
+
+        const results = await CarTyre.find(query);
+        return res.status(200).json(results);
+    } else if (tyreType === "bike") {
+        if (brand) query.bikeBrand = { $in: [brand] };
+        if (model) query.bikeModel = { $in: [model] };
+        if (tyreBrand) query.tyreBrand = { $in: [tyreBrand] };
+        if (seasons) query.seasons = seasons;
+
+        console.log("Query:", query); // Log the constructed query
+
+        const results = await BikeTyre.find(query);
+        return res.status(200).json(results);
+    } else {
+        return res.status(400).json({ message: "Invalid tyre type" });
+    }
+  } catch (error) {
+    console.error("Error in search API:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 
 
 const TyreActive = async (req,res)=>{
@@ -798,113 +828,8 @@ const TyreActive = async (req,res)=>{
 
 
 
-// const ShowDetails = async (req, res) => {
-//   try {
-//     const { id, tyreType, title } = req.params;
-    
-//     // Decode the title parameter (to handle encoded characters like %20 for spaces, %2F for slashes, etc.)
-//     const decodedTitle = decodeURIComponent(title);
-
-//     let TyreModel;
-    
-//     // Fetch the tyre details
-//     if (tyreType === 'car') {
-//         TyreModel = await CarTyre.findById(id).exec();
-//     } else if (tyreType === 'bike') {
-//         TyreModel = await BikeTyre.findById(id).exec();
-//     } else {
-//         return res.status(400).json({ message: "Invalid tyreType. It must be 'car' or 'bike'." });
-//     }
-
-//     // If no tyre found, return a 404
-//     if (!TyreModel) {
-//         return res.status(404).json({ message: "Tyre not found" });
-//     }
-
-//     // Resolve names for car brands and models
-//     const carBrandNames = await CarBrand.find({ _id: { $in: TyreModel.carbrand } });
-//     const carModelNames = await CarModel.find({ _id: { $in: TyreModel.carModel } });
-//     const tyreBrandNames = await TyreBrand.find({ _id: { $in: TyreModel.tyreBrand } });
-
-//     // Map to get an array of names and images for tyre brands
-//     const resolvedCarBrands = carBrandNames.map(brand => brand.name);
-//     const resolvedCarModels = carModelNames.map(model => model.name);
-//     const resolvedTyreBrands = tyreBrandNames.map(brand => ({
-//         name: brand.name,
-//         image: brand.image  // Include image URL or path
-//     }));
-
-//     // Attach resolved names and images to the tyre model
-//     const result = {
-//         ...TyreModel.toObject(), // Convert to plain object
-//         carbrand: resolvedCarBrands,
-//         carModel: resolvedCarModels,
-//         tyreBrand: resolvedTyreBrands,
-//         title: decodedTitle  // Add the decoded title
-//     };
-
-//     // Send the resolved tyre model as the response
-//     res.json(result);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Error getting tyres" });
-//   }
-// };
 
 
-
-// const ShowDetails = async (req, res) => {
-//   try {
-//     const { id, tyreType, slug } = req.params;
-    
-//     // Decode the slug parameter (to handle encoded characters like %20 for spaces, %2F for slashes, etc.)
-//     const decodedSlug = decodeURIComponent(slug);
-
-//     let TyreModel;
-    
-//     // Fetch the tyre details
-//     if (tyreType === 'car') {
-//         TyreModel = await CarTyre.findById(id).exec();
-//     } else if (tyreType === 'bike') {
-//         TyreModel = await BikeTyre.findById(id).exec();
-//     } else {
-//         return res.status(400).json({ message: "Invalid tyreType. It must be 'car' or 'bike'." });
-//     }
-
-//     // If no tyre found, return a 404
-//     if (!TyreModel) {
-//         return res.status(404).json({ message: "Tyre not found" });
-//     }
-
-//     // Resolve names for car brands and models
-//     const carBrandNames = await CarBrand.find({ _id: { $in: TyreModel.carbrand } });
-//     const carModelNames = await CarModel.find({ _id: { $in: TyreModel.carModel } });
-//     const tyreBrandNames = await TyreBrand.find({ _id: { $in: TyreModel.tyreBrand } });
-
-//     // Map to get an array of names and images for tyre brands
-//     const resolvedCarBrands = carBrandNames.map(brand => brand.name);
-//     const resolvedCarModels = carModelNames.map(model => model.name);
-//     const resolvedTyreBrands = tyreBrandNames.map(brand => ({
-//         name: brand.name,
-//         image: brand.image  // Include image URL or path
-//     }));
-
-//     // Attach resolved names and images to the tyre model
-//     const result = {
-//         ...TyreModel.toObject(), // Convert to plain object
-//         carbrand: resolvedCarBrands,
-//         carModel: resolvedCarModels,
-//         tyreBrand: resolvedTyreBrands,
-//         slug: decodedSlug  // Replace title with slug
-//     };
-
-//     // Send the resolved tyre model as the response
-//     res.json(result);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Error getting tyres" });
-//   }
-// };
 
 const ShowDetails = async (req, res) => {
   try {
@@ -1055,5 +980,6 @@ export {
     TyreActive,
     ShowDetails,
     GetCheckbox,
-    bestdeal
+    bestdeal,
+    Searchcarbike
 }

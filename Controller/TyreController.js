@@ -54,6 +54,8 @@ const tyreFunction = async (req, res) => {
   });
   }
 
+
+
   const tyreGetFunction = async (req,res)=>{
     try {
       const tyreBrands = await TyreBrand.find(); // Fetch all tyre brands from the database
@@ -64,6 +66,14 @@ const tyreFunction = async (req, res) => {
     }
   }
 
+
+
+ 
+  
+
+  
+
+ 
 
 
   
@@ -88,26 +98,6 @@ const tyreFunction = async (req, res) => {
 
 
   const tyreUpdateFunction = async (req,res)=>{
-
-    // const { id } = req.params;
-    // const { name, slug, description, image } = req.body;
-  
-    // try {
-    //   const updatedBrand = await TyreBrand.findByIdAndUpdate(
-    //     id, 
-    //     { name, slug, description, image }, 
-    //     { new: true } // Return the updated document
-    //   );
-  
-    //   if (!updatedBrand) {
-    //     return res.status(404).json({ error: 'Tyre brand not found' });
-    //   }
-  
-    //   res.status(200).json({ message: 'Tyre brand updated successfully', updatedBrand });
-    // } catch (error) {
-    //   console.error('Error updating tyre brand:', error);
-    //   res.status(500).json({ error: 'Failed to update tyre brand' });
-    // }
 
     upload(req, res, async function (err) {
       if (err) {

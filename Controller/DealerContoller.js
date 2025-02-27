@@ -1,5 +1,6 @@
 import dealerloginModel from "../Models/DealerLogin.js";
-import Dealer from "../Models/DealerModel.js";
+
+import TyreBrand from "../Models/TyreModel.js";
 
 
 
@@ -183,6 +184,8 @@ try {
 }
 
 
+
+
 export {
     addDealaer,
     GetDealer,
@@ -190,6 +193,6 @@ export {
     UpdateDealer,
     EditDealer,
     ActiveDealer,
-    addDealerLogin
-
+    addDealerLogin,
+  
 }

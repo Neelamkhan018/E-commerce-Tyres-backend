@@ -1,5 +1,5 @@
 import express from 'express'
-import { ActiveDealer, addDealaer,  addDealerLogin,  deleteDealer, EditDealer,  GetDealer, UpdateDealer } from '../Controller/DealerContoller.js'
+import { ActiveDealer, addDealaer,  addDealerLogin,  deleteDealer, EditDealer,  GetDealer,  UpdateDealer } from '../Controller/DealerContoller.js'
 
 
 const Dealerpage = express.Router()

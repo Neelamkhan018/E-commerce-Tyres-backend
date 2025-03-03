@@ -22,6 +22,7 @@ import BusinessRoutes from './Route/BussinessRoute.js';
 import customerRoute from './Route/Customerroute.js';
 import AccinfoRoute from './Route/AccinfoRoute.js';
 import CreateRoute from './Route/CreateCustomerRoute.js';
+import Dealerprice from './Route/DealerpriceRoute.js';
 
 
 
@@ -55,6 +56,7 @@ app.use("/",BusinessRoutes)
 app.use("/",customerRoute)
 app.use("/",AccinfoRoute)
 app.use("/",CreateRoute)
+app.use('/',Dealerprice)
 
 
 

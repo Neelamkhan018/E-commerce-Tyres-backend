@@ -86,40 +86,10 @@ const AddBusinessDetails = async (req, res) => {
 
 
 
-// const getAddress = async (req, res) => {
-//     try {
-//         const { leastTime, pincode } = req.query;
-
-//         // Validate the required fields
-//         if (!leastTime) {
-//             return res.status(400).json({ error: 'LeastTime is required' });
-//         }
-
-//         // Build the query object based on the provided parameters
-//         const query = { leastTime };
-
-//         if (pincode) {
-//             query.pincode = pincode; // Add pincode filter if provided
-//         }
-
-//         // Query businesses that match the leastTime and optional pincode
-//         const businesses = await Businessmodel.find(query);
-
-//         if (businesses.length === 0) {
-//             return res.status(404).json({ message: 'No addresses found for the given criteria' });
-//         }
-
-//         res.status(200).json({ message: 'Addresses fetched successfully', businesses });
-//     } catch (error) {
-//         console.error('Error fetching addresses:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
-
 
 // const getAddress = async (req, res) => {
 //     try {
-//         const { leastTime, pincode } = req.query;
+//         const { leastTime, pincode, tyreId } = req.query;
 
 //         // Validate the required fields
 //         if (!leastTime) {
@@ -134,7 +104,8 @@ const AddBusinessDetails = async (req, res) => {
 
 //         // Fetch prices for each business
 //         const businessesWithPrices = await Promise.all(businesses.map(async (business) => {
-//             const prices = await DealerPriceModel.find({ clientId: business.clientId });
+//             const prices = await DealerPriceModel.find({ clientId: business.clientId, tyreId });
+//             console.log(`Fetching prices for clientId: ${business.clientId}, tyreId: ${tyreId}`, prices); // Log the prices
 //             return {
 //                 ...business.toObject(),
 //                 prices
@@ -153,6 +124,12 @@ const AddBusinessDetails = async (req, res) => {
 // };
 
 
+const getNearbyPincodes = (pincode) => {
+    // This is a placeholder function. You should implement logic to find nearby pincodes.
+    // For example, you could return a list of pincodes that are within a certain range.
+    return [pincode, '400605', '400612','400604','400602']; // Example nearby pincodes
+};
+
 const getAddress = async (req, res) => {
     try {
         const { leastTime, pincode, tyreId } = req.query;
@@ -162,8 +139,11 @@ const getAddress = async (req, res) => {
             return res.status(400).json({ error: 'LeastTime is required' });
         }
 
+        // Get nearby pincodes
+        const nearbyPincodes = getNearbyPincodes(pincode);
+
         // Build the query object based on the provided parameters
-        const query = { leastTime, pincode };
+        const query = { leastTime, pincode: { $in: nearbyPincodes } }; // Use $in to match any of the nearby pincodes
 
         // Query businesses that match the leastTime and optional pincode
         const businesses = await Businessmodel.find(query);
@@ -188,6 +168,8 @@ const getAddress = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+
 
 
 

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const OrderSchema = new mongoose.Schema({
   orderId: {
     type: String,
@@ -15,10 +16,12 @@ const OrderSchema = new mongoose.Schema({
   items: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: "Businessmodeluser" },
-      title: { type: String, required: true }, // ✅ Added title field
+      title: { type: String, required: true },
       image: { type: String, required: false },
       price: { type: Number, required: true },
       quantity: { type: Number, required: true, default: 1 },
+      deliveryType: { type: String, enum: ["Home Delivery", "Get Fitted"], required: true }, // ✅ Added delivery type
+      leastTime: { type: String, required: true }  // ✅ Added least time
     },
   ],
   totalAmount: { type: Number, required: true },
@@ -28,9 +31,12 @@ const OrderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
-    default: "Pending",
-  },
+    enum: ["Completed", "Processing", "Cancelled", "Rejected"],
+    default: "Processing",
+  },  
+
+  completedDate: { type: Date, default: null }, // Add this line
+
   date: { type: Date, default: Date.now },
 });
 

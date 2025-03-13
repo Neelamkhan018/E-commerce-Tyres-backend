@@ -6,12 +6,85 @@ import Businessmodel from '../Models/BusinessDetails.js';
 
 
 // Create a new order
+// const createOrder = async (req, res) => {
+//   try {
+//       console.log(" Received Order Request:", req.body);
+
+//       const { customerId, items, totalAmount, paymentMethod, transactionId } = req.body;
+
+//       if (!customerId || !items || !totalAmount || !paymentMethod) {
+//           console.error(" Missing required fields");
+//           return res.status(400).json({ message: "Missing required fields" });
+//       }
+
+//       console.log("🔍 Fetching customer details for Email:", customerId);
+//       const customer = await frontlogin.findOne({ email: customerId });
+
+//       if (!customer) {
+//           console.error(" Customer not found in database");
+//           return res.status(404).json({ message: "Customer not found" });
+//       }
+
+//       console.log("Customer found:", customer);
+
+//       // Fetch product details and ensure title & image are stored
+//       const populatedItems = await Promise.all(
+//           items.map(async (item) => {
+//               const product = await Businessmodel.findById(item.productId);
+
+//               if (!product) {
+//                   console.warn(` Product not found for ID: ${item.productId}`);
+//               }
+
+//               return {
+//                   productId: item.productId,
+//                   title: item.title || (product ? product.title : "Unknown Product"),
+//                   image: item.image || (product ? product.image : "http://localhost:8000/uploads/default-image.jpg"), // Preserve frontend image
+//                   price: item.price,
+//                   quantity: item.quantity,
+//               };
+//           })
+//       );
+
+//       // Create and save order
+//       const newOrder = new Order({
+//           customer: customer._id,
+//           items: populatedItems,
+//           totalAmount,
+//           payment: {
+//               method: paymentMethod,
+//               transactionId: transactionId || null,
+//           },
+//       });
+
+//       console.log("Saving new order:", newOrder);
+//       await newOrder.save();
+
+//       console.log("Order saved successfully:", newOrder);
+
+//       res.status(201).json({
+//           message: "Order created successfully",
+//           order: newOrder,
+//           customerDetails: {
+//               name: customer.name,
+//               email: customer.email,
+//           },
+//       });
+
+//   } catch (error) {
+//       console.error("Internal Server Error:", error);
+//       res.status(500).json({ message: "Internal Server Error", error: error.message });
+//   }
+// };
+
+
 const createOrder = async (req, res) => {
   try {
       console.log(" Received Order Request:", req.body);
 
       const { customerId, items, totalAmount, paymentMethod, transactionId } = req.body;
 
+      // Validate required fields
       if (!customerId || !items || !totalAmount || !paymentMethod) {
           console.error(" Missing required fields");
           return res.status(400).json({ message: "Missing required fields" });
@@ -25,23 +98,19 @@ const createOrder = async (req, res) => {
           return res.status(404).json({ message: "Customer not found" });
       }
 
-      console.log("Customer found:", customer);
-
-      // Fetch product details and ensure title & image are stored
+      // Process order items with delivery details
       const populatedItems = await Promise.all(
           items.map(async (item) => {
               const product = await Businessmodel.findById(item.productId);
 
-              if (!product) {
-                  console.warn(` Product not found for ID: ${item.productId}`);
-              }
-
               return {
                   productId: item.productId,
-                  title: item.title || (product ? product.title : "Unknown Product"),
-                  image: item.image || (product ? product.image : "http://localhost:8000/uploads/default-image.jpg"), // Preserve frontend image
+                  title: item.title || (product?.title || "Unknown Product"),
+                  image: item.image || (product?.image || "http://localhost:8000/uploads/default-image.jpg"),
                   price: item.price,
                   quantity: item.quantity,
+                  deliveryType: item.deliveryType, // Add delivery type
+                  leastTime: item.leastTime        // Add least time
               };
           })
       );
@@ -57,10 +126,7 @@ const createOrder = async (req, res) => {
           },
       });
 
-      console.log("Saving new order:", newOrder);
       await newOrder.save();
-
-      console.log("Order saved successfully:", newOrder);
 
       res.status(201).json({
           message: "Order created successfully",
@@ -76,7 +142,6 @@ const createOrder = async (req, res) => {
       res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
-
 
 
 
@@ -123,6 +188,30 @@ const CancelOrder = async (req, res) => {
 };
 
   
+// const getOrderById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return res.status(400).json({ message: "Invalid order ID" });
+//     }
+
+//     const order = await Order.findById(id)
+//       .populate("customer", "name email")
+//       .populate("items.productId", "title image");
+
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found" });
+//     }
+
+//     res.json(order);
+//   } catch (error) {
+//     console.error("Error fetching order:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
 const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -132,14 +221,26 @@ const getOrderById = async (req, res) => {
     }
 
     const order = await Order.findById(id)
-      .populate("customer", "name email")
-      .populate("items.productId", "title image");
+      .populate("customer", "name email") // ✅ Populates only customer details
+      .populate("items.productId", "title image"); // ✅ Populates product details
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    res.json(order);
+    res.json({
+      ...order.toObject(),
+      items: order.items.map(item => ({
+        productId: item.productId?._id || item.productId, // Ensure productId is returned
+        title: item.title,
+        image: item.image,
+        price: item.price,
+        quantity: item.quantity,
+        deliveryType: item.deliveryType, // ✅ Already exists, no need for populate
+        leastTime: item.leastTime // ✅ Already exists, no need for populate
+      }))
+    });
+
   } catch (error) {
     console.error("Error fetching order:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -183,4 +284,49 @@ const getOrderById = async (req, res) => {
     }
   }
 
-  export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer}
+
+  const rejectorder = async (req,res) => {
+    try {
+      const { orderId } = req.params;
+  
+      // Find the order by ID and update its status to "Rejected"
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { status: "Rejected" },
+        { new: true } // Returns the updated document
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ success: false, message: "Order not found" });
+      }
+  
+      res.json({ success: true, message: "Order rejected successfully", order: updatedOrder });
+    } catch (error) {
+      console.error("Error rejecting order:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  }
+
+
+  const status = async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { status, completedDate } = req.body;
+  
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, 
+        { status, completedDate }, 
+        { new: true }
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+  
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error });
+    }
+  };
+  
+
+  export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer , rejectorder , status}

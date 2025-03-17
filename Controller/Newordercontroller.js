@@ -6,12 +6,15 @@ import Businessmodel from '../Models/BusinessDetails.js';
 
 
 // Create a new order
+
+
 // const createOrder = async (req, res) => {
 //   try {
 //       console.log(" Received Order Request:", req.body);
 
 //       const { customerId, items, totalAmount, paymentMethod, transactionId } = req.body;
 
+//       // Validate required fields
 //       if (!customerId || !items || !totalAmount || !paymentMethod) {
 //           console.error(" Missing required fields");
 //           return res.status(400).json({ message: "Missing required fields" });
@@ -25,23 +28,19 @@ import Businessmodel from '../Models/BusinessDetails.js';
 //           return res.status(404).json({ message: "Customer not found" });
 //       }
 
-//       console.log("Customer found:", customer);
-
-//       // Fetch product details and ensure title & image are stored
+//       // Process order items with delivery details
 //       const populatedItems = await Promise.all(
 //           items.map(async (item) => {
 //               const product = await Businessmodel.findById(item.productId);
 
-//               if (!product) {
-//                   console.warn(` Product not found for ID: ${item.productId}`);
-//               }
-
 //               return {
 //                   productId: item.productId,
-//                   title: item.title || (product ? product.title : "Unknown Product"),
-//                   image: item.image || (product ? product.image : "http://localhost:8000/uploads/default-image.jpg"), // Preserve frontend image
+//                   title: item.title || (product?.title || "Unknown Product"),
+//                   image: item.image || (product?.image || "http://localhost:8000/uploads/default-image.jpg"),
 //                   price: item.price,
 //                   quantity: item.quantity,
+//                   deliveryType: item.deliveryType, // Add delivery type
+//                   leastTime: item.leastTime        // Add least time
 //               };
 //           })
 //       );
@@ -57,10 +56,7 @@ import Businessmodel from '../Models/BusinessDetails.js';
 //           },
 //       });
 
-//       console.log("Saving new order:", newOrder);
 //       await newOrder.save();
-
-//       console.log("Order saved successfully:", newOrder);
 
 //       res.status(201).json({
 //           message: "Order created successfully",
@@ -77,40 +73,38 @@ import Businessmodel from '../Models/BusinessDetails.js';
 //   }
 // };
 
-
 const createOrder = async (req, res) => {
   try {
-      console.log(" Received Order Request:", req.body);
+      console.log("Received Order Request:", req.body);
 
-      const { customerId, items, totalAmount, paymentMethod, transactionId } = req.body;
+      const { customerId, items, totalAmount, paymentMethod } = req.body;
 
       // Validate required fields
       if (!customerId || !items || !totalAmount || !paymentMethod) {
-          console.error(" Missing required fields");
+          console.error("Missing required fields");
           return res.status(400).json({ message: "Missing required fields" });
       }
 
-      console.log("🔍 Fetching customer details for Email:", customerId);
+      // Fetch customer details
       const customer = await frontlogin.findOne({ email: customerId });
-
       if (!customer) {
-          console.error(" Customer not found in database");
+          console.error("Customer not found in database");
           return res.status(404).json({ message: "Customer not found" });
       }
 
-      // Process order items with delivery details
+      // Process order items
       const populatedItems = await Promise.all(
           items.map(async (item) => {
               const product = await Businessmodel.findById(item.productId);
-
               return {
                   productId: item.productId,
                   title: item.title || (product?.title || "Unknown Product"),
                   image: item.image || (product?.image || "http://localhost:8000/uploads/default-image.jpg"),
                   price: item.price,
                   quantity: item.quantity,
-                  deliveryType: item.deliveryType, // Add delivery type
-                  leastTime: item.leastTime        // Add least time
+                  deliveryType: item.deliveryType,
+                  leastTime: item.leastTime,
+                  clientId: item.clientId // Ensure clientId is included
               };
           })
       );
@@ -122,11 +116,11 @@ const createOrder = async (req, res) => {
           totalAmount,
           payment: {
               method: paymentMethod,
-              transactionId: transactionId || null,
           },
       });
 
       await newOrder.save();
+      console.log("New Order Created:", newOrder); // Log the new order
 
       res.status(201).json({
           message: "Order created successfully",
@@ -136,7 +130,6 @@ const createOrder = async (req, res) => {
               email: customer.email,
           },
       });
-
   } catch (error) {
       console.error("Internal Server Error:", error);
       res.status(500).json({ message: "Internal Server Error", error: error.message });
@@ -147,20 +140,43 @@ const createOrder = async (req, res) => {
 
 
 //get orders
-const getAllOrders = async (req, res) => {
-    try {
-        const orders = await Order.find()
-          .populate("customer", "name email") // Populate customer details
-          .populate("items.productId", "title image"); // Populate product details
+// const getAllOrders = async (req, res) => {
+//     try {
+//         const orders = await Order.find()
+//           .populate("customer", "name email") // Populate customer details
+//           .populate("items.productId", "title image"); // Populate product details
           
     
-        res.json(orders);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        res.status(500).json({ message: "Internal server error" });
-      }
-  };
+//         res.json(orders);
+//       } catch (error) {
+//         console.error("Error fetching orders:", error);
+//         res.status(500).json({ message: "Internal server error" });
+//       }
+//   };
   
+
+const getAllOrders = async (req, res) => {
+  try {
+    const { clientId } = req.query; // Get clientId from query parameters
+    if (!clientId) {
+      return res.status(400).json({ message: "Client ID is required" });
+    }
+
+    console.log("Fetching orders for clientId:", clientId);
+
+    // Fetch orders only for the dealer with the provided clientId
+    const orders = await Order.find({ "items.clientId": clientId })
+      .populate("customer", "name email")
+      .populate("items.productId", "title image");
+
+    console.log("Fetched Orders:", orders);
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 
 
@@ -309,23 +325,23 @@ const getOrderById = async (req, res) => {
 
 
   const status = async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const { status, completedDate } = req.body;
-  
-      const updatedOrder = await Order.findByIdAndUpdate(orderId, 
-        { status, completedDate }, 
-        { new: true }
-      );
-  
-      if (!updatedOrder) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-  
-      res.json(updatedOrder);
-    } catch (error) {
-      res.status(500).json({ message: "Server error", error });
+   try {
+    const { orderId } = req.params;
+    const { status, completedDate } = req.body;
+
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, 
+      { status, completedDate }, 
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
     }
+
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
   };
   
 

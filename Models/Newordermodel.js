@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
 
+
+
 const OrderSchema = new mongoose.Schema({
   orderId: {
     type: String,
@@ -21,7 +23,8 @@ const OrderSchema = new mongoose.Schema({
       price: { type: Number, required: true },
       quantity: { type: Number, required: true, default: 1 },
       deliveryType: { type: String, enum: ["Home Delivery", "Get Fitted"], required: true }, // ✅ Added delivery type
-      leastTime: { type: String, required: true }  // ✅ Added least time
+      leastTime: { type: String, required: true } , // ✅ Added least time
+      clientId: { type: String, required: true } 
     },
   ],
   totalAmount: { type: Number, required: true },

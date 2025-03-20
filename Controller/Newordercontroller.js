@@ -9,67 +9,135 @@ import Businessmodel from '../Models/BusinessDetails.js';
 
 
 const createOrder = async (req, res) => {
+  // try {
+  //     console.log("Received Order Request:", req.body);
+
+  //     const { customerId, items, totalAmount, paymentMethod } = req.body;
+
+  //     // Validate required fields
+  //     if (!customerId || !items || !totalAmount || !paymentMethod) {
+  //         console.error("Missing required fields");
+  //         return res.status(400).json({ message: "Missing required fields" });
+  //     }
+
+  //     // Fetch customer details
+  //     const customer = await frontlogin.findOne({ email: customerId });
+  //     if (!customer) {
+  //         console.error("Customer not found in database");
+  //         return res.status(404).json({ message: "Customer not found" });
+  //     }
+
+  //     // Process order items
+  //     const populatedItems = await Promise.all(
+  //         items.map(async (item) => {
+  //             const product = await Businessmodel.findById(item.productId);
+  //             return {
+  //                 productId: item.productId,
+  //                 title: item.title || (product?.title || "Unknown Product"),
+  //                 image: item.image || (product?.image || "http://localhost:8000/uploads/default-image.jpg"),
+  //                 price: item.price,
+  //                 quantity: item.quantity,
+  //                 deliveryType: item.deliveryType,
+  //                 leastTime: item.leastTime,
+  //                 clientId: item.clientId // Ensure clientId is included
+  //             };
+  //         })
+  //     );
+
+  //     // Create and save order
+  //     const newOrder = new Order({
+  //         customer: customer._id,
+  //         items: populatedItems,
+  //         totalAmount,
+  //         payment: {
+  //             method: paymentMethod,
+  //         },
+  //     });
+
+  //     await newOrder.save();
+  //     console.log("New Order Created:", newOrder); // Log the new order
+
+  //     res.status(201).json({
+  //         message: "Order created successfully",
+  //         order: newOrder,
+  //         customerDetails: {
+  //             name: customer.name,
+  //             email: customer.email,
+  //         },
+  //     });
+  // } catch (error) {
+  //     console.error("Internal Server Error:", error);
+  //     res.status(500).json({ message: "Internal Server Error", error: error.message });
+  // }
+
+
   try {
-      console.log("Received Order Request:", req.body);
+    console.log("Received Order Request:", req.body);
 
-      const { customerId, items, totalAmount, paymentMethod } = req.body;
+    const { customerId, items, totalAmount, paymentMethod } = req.body;
 
-      // Validate required fields
-      if (!customerId || !items || !totalAmount || !paymentMethod) {
-          console.error("Missing required fields");
-          return res.status(400).json({ message: "Missing required fields" });
-      }
+    // Validate required fields
+    if (!customerId || !items || !totalAmount || !paymentMethod) {
+      console.error("Missing required fields");
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
-      // Fetch customer details
-      const customer = await frontlogin.findOne({ email: customerId });
-      if (!customer) {
-          console.error("Customer not found in database");
-          return res.status(404).json({ message: "Customer not found" });
-      }
+    // Fetch customer details
+    const customer = await frontlogin.findOne({ email: customerId });
+    if (!customer) {
+      console.error("Customer not found in database");
+      return res.status(404).json({ message: "Customer not found" });
+    }
 
-      // Process order items
-      const populatedItems = await Promise.all(
-          items.map(async (item) => {
-              const product = await Businessmodel.findById(item.productId);
-              return {
-                  productId: item.productId,
-                  title: item.title || (product?.title || "Unknown Product"),
-                  image: item.image || (product?.image || "http://localhost:8000/uploads/default-image.jpg"),
-                  price: item.price,
-                  quantity: item.quantity,
-                  deliveryType: item.deliveryType,
-                  leastTime: item.leastTime,
-                  clientId: item.clientId // Ensure clientId is included
-              };
-          })
-      );
+    // Process order items
+    const populatedItems = await Promise.all(
+      items.map(async (item) => {
+        const product = await Businessmodel.findById(item.productId);
 
-      // Create and save order
-      const newOrder = new Order({
-          customer: customer._id,
-          items: populatedItems,
-          totalAmount,
-          payment: {
-              method: paymentMethod,
-          },
-      });
+        return {
+          productId: item.productId,
+          title: item.title || (product?.title || "Unknown Product"),
+          image: item.image || (product?.image || "http://localhost:8000/uploads/default-image.jpg"),
+          price: item.price,
+          quantity: item.quantity,
+          deliveryType: item.deliveryType,
+          leastTime: item.leastTime,
+          ...(item.deliveryType === "Get Fitted" ? { clientId: item.clientId } : {}), // ✅ Include clientId only if deliveryType is "Get Fitted"
+        };
+      })
+    );
 
-      await newOrder.save();
-      console.log("New Order Created:", newOrder); // Log the new order
+    // Create and save order
+    const newOrder = new Order({
+      customer: customer._id,
+      items: populatedItems,
+      totalAmount,
+      payment: {
+        method: paymentMethod,
+      },
+    });
 
-      res.status(201).json({
-          message: "Order created successfully",
-          order: newOrder,
-          customerDetails: {
-              name: customer.name,
-              email: customer.email,
-          },
-      });
+    await newOrder.save();
+    console.log("New Order Created:", newOrder); // Log the new order
+
+    res.status(201).json({
+      message: "Order created successfully",
+      order: newOrder,
+      customerDetails: {
+        name: customer.name,
+        email: customer.email,
+      },
+    });
   } catch (error) {
-      console.error("Internal Server Error:", error);
-      res.status(500).json({ message: "Internal Server Error", error: error.message });
+    console.error("Internal Server Error:", error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+
+
+
+
 
  
 
@@ -98,30 +166,27 @@ const getAllOrders = async (req, res) => {
 
 
 
+const getHomeDeliveryOrders = async (req, res) => {
+  try {
+    console.log("Fetching home delivery orders...");
+
+    // Fetch orders with deliveryType "Home Delivery"
+    const homeDeliveryOrders = await Order.find({ "items.deliveryType": "Home Delivery" })
+      .populate("customer", "name email")
+      .populate("items.productId", "title image");
+
+    console.log("Fetched Home Delivery Orders:", homeDeliveryOrders);
+    res.json(homeDeliveryOrders);
+  } catch (error) {
+    console.error("Error fetching home delivery orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
   
 // Cancel order by ID
-// const CancelOrder = async (req, res) => {
-//   try {
-//     const orderId = req.params.id;
-//     const order = await Order.findById(orderId);
-
-//     if (!order) {
-//       return res.status(404).json({ success: false, message: "Order not found" });
-//     }
-
-//     // Update order status to "Cancelled"
-//     order.status = "Cancelled";
-//     await order.save();
-
-//     res.json({ success: true, message: "Order cancelled successfully" });
-//   } catch (error) {
-//     console.error("Error cancelling order:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-
-// };
-
-
 const CancelOrder = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -203,20 +268,6 @@ const getOrderById = async (req, res) => {
 };
 
 
-  // const getcancelhistory = async (req, res) => {
-  //   try {
-  //     // Fetch canceled orders and populate customer details (name and email)
-  //     const canceledOrders = await Order.find({ status: "Cancelled" })
-  //       .populate("customer", "name email") // Populate customer details
-  //       .populate("items.productId", "title image"); // Populate product details for items
-  
-  //     res.json(canceledOrders);
-  //   } catch (error) {
-  //     console.error("Error fetching order history:", error);
-  //     res.status(500).json({ success: false, message: "Server error" });
-  //   }
-  // };
-  
 
   const getcancelhistory = async (req, res) => {
     try {
@@ -312,4 +363,6 @@ const getOrderById = async (req, res) => {
   };
   
 
-  export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer , rejectorder , status}
+  export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer , rejectorder , status ,
+  getHomeDeliveryOrders
+  }

@@ -1,5 +1,5 @@
 import express from 'express'
-import { CancelOrder, createOrder, getAllOrders, getcancelhistory, getcustomer, getOrderById, rejectorder, status } from '../Controller/Newordercontroller.js'
+import { CancelOrder, createOrder, getAllOrders, getcancelhistory, getcustomer, getHomeDeliveryOrders, getOrderById, rejectorder, status } from '../Controller/Newordercontroller.js'
 
 
 
@@ -14,6 +14,7 @@ const NeworderRoute = express.Router()
 .get('/customer/:id', getcustomer)
 .put('/reject/:orderId',rejectorder)
 .put("/status/:orderId",status)
+.get("/home-delivery", getHomeDeliveryOrders)
 
 
 export default NeworderRoute;

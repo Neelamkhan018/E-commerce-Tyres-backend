@@ -1,10 +1,12 @@
 import express from 'express';
 import dealeraccountModel from "../Models/DealerCreateModel.js";
+import Businessmodel from "../Models/BusinessDetails.js"
 import { randomInt } from 'crypto';
 
 const otpStore = new Map();
 import nodemailer from 'nodemailer'
 import Gstmodel from '../Models/GstModel.js';
+import DealerPriceModel from '../Models/Dealerpricemodel.js';
 
 const generateOtp = () => randomInt(100000, 999999).toString(); // 6-digit OTP
 
@@ -34,48 +36,7 @@ const sendOTPEmail = async (email, otp) => {
 
 
 
-// // Dealer account creation function
-
-
-// const AddCreateDealer = async (req, res) => {
-//   console.log('Received Data:', req.body); // Debugging
-  
-//   const { username, mobileNumber, email, password, mobileOtp, emailOtp } = req.body;
-
-//   if (!username || !mobileNumber || !email || !password || !mobileOtp || !emailOtp) {
-//     return res.status(400).json({ message: "All fields are required" });
-//   }
-
-//   try {
-//     const existingDealer = await dealeraccountModel.findOne({ email });
-//     if (existingDealer) {
-//       return res.status(409).json({ message: "Email already exists" });
-//     }
-
-//     const storedMobileOtp = otpStore.get(mobileNumber);
-//     const storedEmailOtp = otpStore.get(email);
-
-//     if (!storedMobileOtp || storedMobileOtp !== mobileOtp || !storedEmailOtp || storedEmailOtp !== emailOtp) {
-//       return res.status(400).json({ message: "Invalid OTPs" });
-//     }
-
-//     const newDealer = new dealeraccountModel({
-//       username,
-//       mobileNumber,
-//       email,
-//       password,
-//     });
-
-//     await newDealer.save();
-//     otpStore.delete(mobileNumber);
-//     otpStore.delete(email);
-
-//     res.status(201).json({ message: "Dealer account created successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Error creating dealer account", error: error.message });
-//   }
-// };
+//  Dealer - register of dealer
 
 const AddCreateDealer = async (req, res) => {
   console.log('Received Data:', req.body); // Debugging
@@ -105,6 +66,7 @@ const AddCreateDealer = async (req, res) => {
       mobileNumber,
       email,
       password,
+      joinDate: new Date(), // Store the current date and time
     });
 
     const savedDealer = await newDealer.save();
@@ -122,40 +84,9 @@ const AddCreateDealer = async (req, res) => {
 };
 
 
+
+
 // ------- Add Login -----------------
-
-
-// const AddDealerLogin = async (req, res) => {
-//   const { emailOrMobile } = req.body;
-
-//   try {
-//     const isMobileNumber = /^\d+$/.test(emailOrMobile);
-//     const query = isMobileNumber
-//       ? { mobileNumber: emailOrMobile }
-//       : { email: emailOrMobile };
-
-//     const existingEntry = await dealeraccountModel.findOne(query);
-
-//     if (!existingEntry) {
-//       return res.status(404).json({ message: "Email or mobile number not found." });
-//     }
-
-//     // Generate OTP
-//     const otp = Math.floor(100000 + Math.random() * 900000);
-//     otpStore[emailOrMobile] = otp; // Store OTP in memory
-
-//     console.log(`OTP for ${emailOrMobile}: ${otp}`);
-
-//     return res.status(200).json({
-//       message: `OTP sent to ${emailOrMobile}`,
-//       otp,
-//       clientId: existingEntry.clientId, // Send clientId to the frontend
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Something went wrong. Please try again later." });
-//   }
-// };
 
 const AddDealerLogin = async (req, res) => {
   const { emailOrMobile } = req.body;
@@ -266,17 +197,6 @@ const GstVerifyOtp = async (req,res)=>{
 
 
 
-// const addGstDetails = async (req,res)=>{
-//   const gstDetails = new Gstmodel(req.body);
-//     try {
-//         await gstDetails.save();
-//         return res.status(201).json({ message: 'GST details saved successfully' });
-//     } catch (error) {
-//         return res.status(500).json({ error: 'Failed to save GST details' });
-//     }
-
-// }
-
 
 const addGstDetails = async (req, res) => {
   try {
@@ -296,13 +216,43 @@ const addGstDetails = async (req, res) => {
 
 
 
+//  This  api is for dealer list 
+const getAllDealers = async (req, res) => {
+  try {
+    const dealers = await dealeraccountModel.find();
+    res.status(200).json({ success: true, dealers });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error fetching dealers", error: error.message });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export { AddcreateOtp, 
   AddCreateDealer,
   AddDealerLogin,
   AddLoginOtp,
   addGstDetails,
   GstgenerateOtp,
-  GstVerifyOtp}
+  GstVerifyOtp,
+  getAllDealers,
+
+}
 
 
 

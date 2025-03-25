@@ -165,6 +165,106 @@ const getAllOrders = async (req, res) => {
 
 
 
+// const getTotalAmountPerDealer = async (req, res) => {
+//   try {
+//     // First, get the total amounts per dealer
+//     const totalAmounts = await Order.aggregate([
+//       {
+//         $unwind: "$items" // Unwind the items array to group by clientId
+//       },
+//       {
+//         $group: {
+//           _id: "$items.clientId", // Group by clientId
+//           totalAmount: { $sum: "$totalAmount" }, // Sum the totalAmount for each dealer
+//           totalOrders: { $sum: 1 } // Count the total number of orders for each dealer
+//         },
+//       },
+//     ]);
+
+//     // Get the total number of orders across all dealers
+//     const totalOrdersCount = await Order.countDocuments();
+
+//     // Calculate the total amount across all orders
+//     const totalAmountSum = await Order.aggregate([
+//       {
+//         $group: {
+//           _id: null,
+//           totalAmount: { $sum: "$totalAmount" }
+//         }
+//       }
+//     ]);
+
+//     const totalAmount = totalAmountSum[0] ? totalAmountSum[0].totalAmount : 0;
+
+//     res.status(200).json({
+//       success: true,
+//       totalAmounts,
+//       totalOrders: totalOrdersCount,
+//       totalAmount
+//     });
+//   } catch (error) {
+//     console.error("Error fetching total amounts per dealer:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
+
+
+const getTotalAmountPerDealer = async (req, res) => {
+  try {
+    // Aggregate total amounts and orders per dealer excluding cancelled/rejected orders
+    const totalAmounts = await Order.aggregate([
+      { $unwind: "$items" }, // Flatten items array
+      {
+        $match: {
+          status: { $nin: ["Cancelled", "Rejected"] }, // Exclude cancelled and rejected orders
+        },
+      },
+      {
+        $group: {
+          _id: "$items.clientId", // Group by dealer (clientId)
+          totalAmount: { $sum: "$totalAmount" }, // Sum total amounts
+          totalOrders: { $sum: 1 }, // Count valid orders
+        },
+      },
+    ]);
+
+    // Get total order count (excluding cancelled/rejected)
+    const totalOrdersCount = await Order.countDocuments({
+      status: { $nin: ["Cancelled", "Rejected"] },
+    });
+
+    // Get total revenue across all orders
+    const totalAmountSum = await Order.aggregate([
+      {
+        $match: {
+          status: { $nin: ["Cancelled", "Rejected"] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+
+    const totalAmount = totalAmountSum[0] ? totalAmountSum[0].totalAmount : 0;
+
+    res.status(200).json({
+      success: true,
+      totalAmounts,
+      totalOrders: totalOrdersCount,
+      totalAmount,
+    });
+  } catch (error) {
+    console.error("Error fetching total amounts per dealer:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
 
 const getHomeDeliveryOrders = async (req, res) => {
   try {
@@ -364,5 +464,5 @@ const getOrderById = async (req, res) => {
   
 
   export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer , rejectorder , status ,
-  getHomeDeliveryOrders
+  getHomeDeliveryOrders , getTotalAmountPerDealer
   }

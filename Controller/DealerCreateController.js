@@ -196,6 +196,7 @@ const GstVerifyOtp = async (req,res)=>{
 }
 
 
+//gst post api 
 
 
 const addGstDetails = async (req, res) => {
@@ -210,6 +211,28 @@ const addGstDetails = async (req, res) => {
       return res.status(201).json({ message: 'GST details saved successfully' });
   } catch (error) {
       return res.status(500).json({ error: 'Failed to save GST details' });
+  }
+};
+
+
+const getGstDetails = async (req, res) => {
+  try {
+    const { clientId } = req.params; // Extract clientId from request params
+
+    if (!clientId) {
+      return res.status(400).json({ error: "Client ID is required" });
+    }
+
+    const gstDetails = await Gstmodel.findOne({ clientId });
+
+    if (!gstDetails) {
+      return res.status(404).json({ message: "GST details not found" });
+    }
+
+    return res.status(200).json({ success: true, gst: gstDetails });
+  } catch (error) {
+    console.error("Error fetching GST details:", error);
+    return res.status(500).json({ error: "Failed to retrieve GST details" });
   }
 };
 
@@ -229,14 +252,21 @@ const getAllDealers = async (req, res) => {
 
 
 
+const getDealerById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const dealer = await dealeraccountModel.findById(id);
 
+    if (!dealer) {
+      return res.status(404).json({ success: false, message: "Dealer not found" });
+    }
 
-
-
-
-
-
-
+    res.status(200).json({ success: true, dealer });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error fetching dealer", error: error.message });
+  }
+};
 
 
 
@@ -251,7 +281,8 @@ export { AddcreateOtp,
   GstgenerateOtp,
   GstVerifyOtp,
   getAllDealers,
-
+getDealerById , 
+getGstDetails
 }
 
 

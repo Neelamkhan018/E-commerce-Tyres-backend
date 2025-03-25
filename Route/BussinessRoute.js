@@ -1,5 +1,5 @@
 import express from 'express'
-import { AddBusinessDetails, getAddress, getStoreName } from '../Controller/BusinessController.js'
+import { AddBusinessDetails, getAddress, getBusinessDetailsByClientId, getStoreName } from '../Controller/BusinessController.js'
 
 
 const BusinessRoutes = express.Router()
@@ -7,7 +7,8 @@ const BusinessRoutes = express.Router()
 .get("/get-addresses", getAddress)
 
 
-.get("/get-store/:clientId", getStoreName);
+.get("/get-store/:clientId", getStoreName)
 
+.get('/business/:clientId', getBusinessDetailsByClientId);
 
 export default BusinessRoutes;

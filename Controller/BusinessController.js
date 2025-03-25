@@ -106,4 +106,29 @@ const getStoreName = async (req, res) => {
 
 
 
-export {AddBusinessDetails , getAddress , getStoreName}
+const getBusinessDetailsByClientId = async (req, res) => {
+    try {
+        const { clientId } = req.params;
+
+        if (!clientId) {
+            return res.status(400).json({ error: 'Client ID is required' });
+        }
+
+        const business = await Businessmodel.findOne({ clientId });
+
+        if (!business) {
+            return res.status(404).json({ message: 'Business details not found' });
+        }
+
+        res.status(200).json({ success: true, business });
+    } catch (error) {
+        console.error('Error fetching business details:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+
+
+
+export {AddBusinessDetails , getAddress , getStoreName , getBusinessDetailsByClientId}

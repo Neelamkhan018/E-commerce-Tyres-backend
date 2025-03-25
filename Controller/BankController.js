@@ -18,27 +18,6 @@ app.use(bodyParser.json());
 
 
 
-
-// const AddBankDetails = async (req,res)=>{
-//     try {
-//         const { bankAccount, reenteraccountnumber } = req.body;
-
-//         // Backend validation
-//         if (bankAccount !== reenteraccountnumber) {
-//             return res.status(400).json({ message: 'Bank account numbers do not match.' });
-//         }
-
-//         const newBankDetail = new Bankmodel(req.body);
-//         await newBankDetail.save();
-//         res.status(201).json({ message: 'Bank details added successfully!' });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error adding bank details', error });
-//     }
-// }
-
-
-
-
 const AddBankDetails = async (req, res) => {
     try {
         const clientId = req.body.clientId; // Ensure clientId is included
@@ -60,6 +39,28 @@ const AddBankDetails = async (req, res) => {
 };
 
 
+
+
+const GetBankDetails = async (req, res) => {
+  try {
+    const { clientId } = req.params;
+    const bank = await Bankmodel.findOne({ clientId });
+
+    if (!bank) {
+      return res.status(404).json({ success: false, message: "Bank details not found" });
+    }
+
+    res.status(200).json({ success: true, bank });
+  } catch (error) {
+    console.error("Error fetching bank details:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
+
 export {
-    AddBankDetails
+    AddBankDetails , 
+    GetBankDetails
 }

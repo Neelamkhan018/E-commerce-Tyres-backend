@@ -25,6 +25,9 @@ import CreateRoute from './Route/CreateCustomerRoute.js';
 import Dealerprice from './Route/DealerpriceRoute.js';
 import NeworderRoute from './Route/NeworderRoute.js';
 import DeliveryRoute from './Route/DeliveryRoute.js';
+import DealerListRoute from './Route/DealerListRoute.js';
+
+
 
 
 
@@ -62,6 +65,11 @@ app.use("/",CreateRoute)
 app.use('/',Dealerprice)
 app.use("/",NeworderRoute)
 app.use("/",DeliveryRoute)
+app.use("/",DealerListRoute)
+
+
+
+
 
 
  app.listen(8000, ()=>{

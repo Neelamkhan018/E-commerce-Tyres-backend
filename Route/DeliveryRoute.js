@@ -6,6 +6,6 @@ const DeliveryRoute = express.Router()
 
 
 .post("/select-delivery-option", selectDeliveryOption)
-// .get("/get-delivery-option/:tyreId",getdelivery)
+
 
 export default DeliveryRoute;

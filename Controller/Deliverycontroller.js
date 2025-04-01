@@ -21,8 +21,5 @@ const selectDeliveryOption = async (req, res) => {
 
 
 
-  
-
-
 
 export {selectDeliveryOption }

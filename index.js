@@ -68,10 +68,6 @@ app.use("/",DeliveryRoute)
 app.use("/",DealerListRoute)
 
 
-
-
-
-
  app.listen(8000, ()=>{
     console.log('Server Is Running');
 })

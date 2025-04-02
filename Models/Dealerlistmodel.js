@@ -18,5 +18,7 @@ const DealerList = new mongoose.Schema({
 
   const DealerListSchema = mongoose.model('dealerlist', DealerList);
 
+
+  
 export default DealerListSchema;
 

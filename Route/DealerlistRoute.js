@@ -10,6 +10,4 @@ const DealerListRoute = express.Router()
 .get("/get-dealer-lists", getDealerList)
 
 
-
-
 export default DealerListRoute;

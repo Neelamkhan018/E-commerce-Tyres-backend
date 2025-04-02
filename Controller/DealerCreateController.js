@@ -271,8 +271,6 @@ const getDealerById = async (req, res) => {
 
 
 
-
-
 export { AddcreateOtp, 
   AddCreateDealer,
   AddDealerLogin,

@@ -20,4 +20,6 @@ const NeworderRoute = express.Router()
 .get("/get-total-amount-by-client/:clientId", getTotalAmountByClientId);
 
 
+
+
 export default NeworderRoute;

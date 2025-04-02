@@ -10,4 +10,6 @@ const BankRoute = express.Router()
 .get("/get-bank-details/:clientId", GetBankDetails);
 
 
+
+
 export default BankRoute;

@@ -7,6 +7,4 @@ const AccinfoRoute = express.Router()
 .post('/Accinfo',AddAccinfo)
 
 
-
-
 export default AccinfoRoute;

@@ -17,5 +17,8 @@ const route = express.Router()
 .get("/get-checkbox", GetCheckbox)  //dealer api
 .get("/get-bestdeal",bestdeal)
 
+
+
+
 export default route;
 

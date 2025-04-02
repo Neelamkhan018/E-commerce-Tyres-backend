@@ -15,6 +15,8 @@ const BikemodelRoute = express.Router()
 
 .put("/active-bikemodel/:id",ActiveBikeModel)
 
+
+
 export default BikemodelRoute;
 
 

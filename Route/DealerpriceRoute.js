@@ -8,7 +8,4 @@ const Dealerprice = express.Router()
 
 
 
-
-
-
 export default Dealerprice;

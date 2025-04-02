@@ -18,4 +18,7 @@ const createdealer = express.Router()
 .get("/get-dealers",getAllDealers)
 .get("/dealer/:id", getDealerById)
 
+
+
+
 export default createdealer

@@ -11,4 +11,7 @@ const BusinessRoutes = express.Router()
 
 .get('/business/:clientId', getBusinessDetailsByClientId);
 
+
+
+
 export default BusinessRoutes;

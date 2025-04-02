@@ -1,5 +1,5 @@
 
-import express from "express";
+
 import Accinfo from "../Models/Accountinfomodel.js"; // Import the Accinfo model
 
 const AddAccinfo = async (req, res)=>{ 
@@ -28,6 +28,9 @@ const AddAccinfo = async (req, res)=>{
         res.status(500).json({ message: 'Server error' });
       }
 }
+
+
+
 
 
 export {AddAccinfo }

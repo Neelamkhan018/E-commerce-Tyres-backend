@@ -2,7 +2,7 @@
 import TyreBrand from "../Models/TyreModel.js";
 import multer from "multer";
 import path from "path"
-import { BikeTyre, CarTyre } from "../Models/adminModel.js";
+import { BikeTyre, CarTyre, TruckTyre } from "../Models/adminModel.js";
 import mongoose from 'mongoose';
 
 
@@ -191,6 +191,49 @@ const GettyreFunction = async (req,res)=>{
 
 
 
+// const getForTyre = async (req, res) => {
+//   try {
+//     const { brandId } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(brandId)) {
+//       return res.status(400).json({ message: "Invalid brand ID format" });
+//     }
+
+//     const brand = await TyreBrand.findById(brandId);
+//     if (!brand) {
+//       return res.status(404).json({ message: "Tyre brand not found" });
+//     }
+
+//     // Log brand info for debugging
+//     console.log("Brand:", brand);
+
+//     const [carTyres, bikeTyres] = await Promise.all([
+//       CarTyre.find({ tyreBrand: brand._id }),  // Ensure using ObjectId for tyreBrand
+//       BikeTyre.find({ tyreBrand: brand._id })  // Ensure using ObjectId for tyreBrand
+//     ]);
+
+//     // Log tyre data for debugging
+//     console.log("Car Tyres:", carTyres);
+//     console.log("Bike Tyres:", bikeTyres);
+
+//     const allTyres = [...carTyres, ...bikeTyres];
+
+//     // If no tyres found, send an empty array but without the popup message
+//     return res.status(200).json({
+//       count: allTyres.length,
+//       tyres: allTyres,  // Empty array will be returned if no tyres found
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching tyres by brand:", error);
+//     return res.status(500).json({ 
+//       message: "Server error",
+//       error: error.message 
+//     });
+//   }
+// };
+
+
 const getForTyre = async (req, res) => {
   try {
     const { brandId } = req.params;
@@ -207,16 +250,18 @@ const getForTyre = async (req, res) => {
     // Log brand info for debugging
     console.log("Brand:", brand);
 
-    const [carTyres, bikeTyres] = await Promise.all([
+    const [carTyres, bikeTyres, truckTyres] = await Promise.all([
       CarTyre.find({ tyreBrand: brand._id }),  // Ensure using ObjectId for tyreBrand
-      BikeTyre.find({ tyreBrand: brand._id })  // Ensure using ObjectId for tyreBrand
+      BikeTyre.find({ tyreBrand: brand._id }),  // Ensure using ObjectId for tyreBrand
+      TruckTyre.find({ tyreBrand: brand._id })   // New query for truck tyres
     ]);
 
     // Log tyre data for debugging
     console.log("Car Tyres:", carTyres);
     console.log("Bike Tyres:", bikeTyres);
+    console.log("Truck Tyres:", truckTyres); // Log truck tyres for debugging
 
-    const allTyres = [...carTyres, ...bikeTyres];
+    const allTyres = [...carTyres, ...bikeTyres, ...truckTyres]; // Combine all tyre types
 
     // If no tyres found, send an empty array but without the popup message
     return res.status(200).json({
@@ -232,6 +277,7 @@ const getForTyre = async (req, res) => {
     });
   }
 };
+
 
   export  {
     tyreFunction,

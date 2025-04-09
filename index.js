@@ -26,6 +26,10 @@ import Dealerprice from './Route/DealerpriceRoute.js';
 import NeworderRoute from './Route/NeworderRoute.js';
 import DeliveryRoute from './Route/DeliveryRoute.js';
 import DealerStore from './Route/DealerstoreRoute.js';
+import TruckBrandRoute from './Route/TruckBrandRoute.js';
+import TruckmodelRoute from './Route/TruckModelRoute.js';
+import TractorBrandRoute from './Route/TractorBrandRoute.js';
+import TractormodelRoute from './Route/TractorModelRoute.js';
 
 
 
@@ -68,6 +72,11 @@ app.use('/',Dealerprice)
 app.use("/",NeworderRoute)
 app.use("/",DeliveryRoute)
 app.use("/",DealerStore)
+app.use("/",TruckBrandRoute)
+app.use("/",TruckmodelRoute)
+app.use("/",TractorBrandRoute)
+app.use("/",TractormodelRoute)
+
 
 
  app.listen(8000, ()=>{

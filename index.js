@@ -30,8 +30,14 @@ import TruckBrandRoute from './Route/TruckBrandRoute.js';
 import TruckmodelRoute from './Route/TruckModelRoute.js';
 import TractorBrandRoute from './Route/TractorBrandRoute.js';
 import TractormodelRoute from './Route/TractorModelRoute.js';
+import BatteryBrandRoute from './Route/BatteryBrandRoute.js';
+import BatteryModelRoute from './Route/BatteryModelRoute.js';
+import AlloyWheelBrandRoute from './Route/AlloyWheelBrandRoute.js';
+import AlloyWheelModelRoute from './Route/AlloyWheelModelRoute.js';
+import AccessoriesBrandRoute from './Route/AccessoriesBrandRoute.js';
+import AccessoriesModelRoute from './Route/AccessoriesModelRoute.js';
 
-
+import RouteUpload from "./Route/RouteUpload.js"
 
 
 
@@ -76,7 +82,14 @@ app.use("/",TruckBrandRoute)
 app.use("/",TruckmodelRoute)
 app.use("/",TractorBrandRoute)
 app.use("/",TractormodelRoute)
+app.use("/",BatteryBrandRoute)
+app.use("/",BatteryModelRoute)
+app.use("/",AlloyWheelBrandRoute)
+app.use("/",AlloyWheelModelRoute)
+app.use("/",AccessoriesBrandRoute)
+app.use("/",AccessoriesModelRoute)
 
+app.use("/",RouteUpload)
 
 
  app.listen(8000, ()=>{

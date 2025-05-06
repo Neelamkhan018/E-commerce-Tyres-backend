@@ -462,8 +462,14 @@ const getOrderById = async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
   };
-  
+
+
+
+
+
+
+
 
   export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer , rejectorder , status ,
-  getHomeDeliveryOrders , getTotalAmountPerDealer , getTotalAmountByClientId
+  getHomeDeliveryOrders , getTotalAmountPerDealer , getTotalAmountByClientId 
   }

@@ -1,300 +1,5 @@
 
 
-
-// import mongoose from "mongoose";
-
-// const { Schema } = mongoose;
-
-// // CarTyre Schema
-// const carTyreSchema = new Schema({
-//     title: String,
-//     slug: { type: String, unique: true }, // Added slug field
-//     tyreType: String,
-//     description: String,
-//     description1: String,
-//     price: Number,
-//     Salesprice: Number,
-//     Type: String,
-//     carbrand: [String],
-//     carModel: [String],
-//     tyreBrand: [String],
-//     width: Number,
-//     height: Number,
-//     customs: Number,
-//     seasons: String,
-//     speedRating: String,
-//     loadCapacity: Number,
-//     material: String,
-//     manufactureMonth: String,
-//     manufactureYear: Number,
-//     warranty: String,
-//     quantity: Number,
-//     avatarImages: { type: String },
-//     thumb1Images: { type: String },
-//     thumb2Images: { type: String },
-//     thumb3Images: { type: String },
-//     thumb4Images: { type: String },
-//     thumb5Images: { type: String },
-//     thumb6Images: { type: String },
-//     addresses: [{
-//         state: String,
-//         city: String,
-//         pinCode: String,
-//         details: String,
-//     }],
-//     active: {
-//         type: Boolean,
-//         default: true,
-//     },
-// }, { timestamps: true });
-
-// // Instance method to determine if the tyre is new or on sale
-// carTyreSchema.methods.getStatus = function () {
-//     const isNew = (new Date() - this.createdAt) < 30 * 24 * 60 * 60 * 1000; // Check if added within the last 30 days
-//     const isOnSale = this.Salesprice < this.price;
-    
-//     return {
-//         status: isNew ? 'New' : (isOnSale ? 'On Sale' : 'Regular Price')
-//     };
-// };
-
-// const CarTyre = mongoose.model('CarTyre', carTyreSchema);
-
-// // BikeTyre Schema
-// const bikeTyreSchema = new Schema({
-//     title: String,
-//     slug: { type: String, unique: true }, // Added slug field
-//     tyreType: String,
-//     description: String,
-//     description1: String,
-//     price: Number,
-//     Salesprice: Number,
-//     Type: String,
-//     bikeBrand: [String],
-//     bikeModel: [String],
-//     tyreBrand: [String], 
-//     width: Number,
-//     height: Number,
-//     customs: Number,
-//     seasons: String,
-//     speedRating: String,
-//     loadCapacity: Number,
-//     fronttyre: String,
-//     reartyre: String,
-//     material: String,
-//     manufactureMonth: String,
-//     manufactureYear: Number,
-//     warranty: String,
-//     quantity: Number,
-//     avatarImages: { type: String },
-//     thumb1Images: { type: String },
-//     thumb2Images: { type: String },
-//     thumb3Images: { type: String },
-//     thumb4Images: { type: String },
-//     thumb5Images: { type: String },
-//     thumb6Images: { type: String },
-//     addresses: [{
-//         state: String,
-//         city: String,
-//         pinCode: String,
-//         details: String,
-//     }],
-//     active: {
-//         type: Boolean,
-//         default: true,
-//     },
-// }, { timestamps: true });
-
-// // Instance method to determine if the tyre is new or on sale
-// bikeTyreSchema.methods.getStatus = function () {
-//     const isNew = (new Date() - this.createdAt) < 30 * 24 * 60 * 60 * 1000; // Check if added within the last 30 days
-//     const isOnSale = this.Salesprice < this.price;
-    
-//     return {
-//         status: isNew ? 'New' : (isOnSale ? 'On Sale' : 'Regular Price')
-//     };
-// };
-
-// const BikeTyre = mongoose.model('BikeTyre', bikeTyreSchema);
-
-// export { CarTyre, BikeTyre };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import mongoose from "mongoose";
-
-// const { Schema } = mongoose;
-
-// // CarTyre Schema
-// const carTyreSchema = new Schema({
-//     title: String,
-//     slug: { type: String, unique: true },
-//     tyreType: String,
-//     description: String,
-//     description1: String,
-//     price: Number,
-//     Salesprice: Number,
-//     Type: String,
-//     carbrand: [String],
-//     carModel: [String],
-//     tyreBrand: [String],
-//     width: Number,
-//     height: Number,
-//     customs: Number,
-//     seasons: String,
-//     speedRating: String,
-//     loadCapacity: Number,
-//     material: String,
-//     manufactureMonth: String,
-//     manufactureYear: Number,
-//     warranty: String,
-//     quantity: Number,
-//     avatarImages: { type: String },
-//     thumb1Images: { type: String },
-//     thumb2Images: { type: String },
-//     thumb3Images: { type: String },
-//     thumb4Images: { type: String },
-//     thumb5Images: { type: String },
-//     thumb6Images: { type: String },
-//     addresses: [{
-//         state: String,
-//         city: String,
-//         pinCode: String,
-//         details: String,
-//     }],
-//     active: { type: Boolean, default: true },
-// }, { timestamps: true });
-
-// carTyreSchema.methods.getStatus = function () {
-//     const isNew = (new Date() - this.createdAt) < 30 * 24 * 60 * 60 * 1000;
-//     const isOnSale = this.Salesprice < this.price;
-//     return { status: isNew ? 'New' : (isOnSale ? 'On Sale' : 'Regular Price') };
-// };
-
-// const CarTyre = mongoose.model('CarTyre', carTyreSchema);
-
-// // BikeTyre Schema
-// const bikeTyreSchema = new Schema({
-//     title: String,
-//     slug: { type: String, unique: true },
-//     tyreType: String,
-//     description: String,
-//     description1: String,
-//     price: Number,
-//     Salesprice: Number,
-//     Type: String,
-//     bikeBrand: [String],
-//     bikeModel: [String],
-//     tyreBrand: [String],
-//     width: Number,
-//     height: Number,
-//     customs: Number,
-//     seasons: String,
-//     speedRating: String,
-//     loadCapacity: Number,
-//     fronttyre: String,
-//     reartyre: String,
-//     material: String,
-//     manufactureMonth: String,
-//     manufactureYear: Number,
-//     warranty: String,
-//     quantity: Number,
-//     avatarImages: { type: String },
-//     thumb1Images: { type: String },
-//     thumb2Images: { type: String },
-//     thumb3Images: { type: String },
-//     thumb4Images: { type: String },
-//     thumb5Images: { type: String },
-//     thumb6Images: { type: String },
-//     addresses: [{
-//         state: String,
-//         city: String,
-//         pinCode: String,
-//         details: String,
-//     }],
-//     active: { type: Boolean, default: true },
-// }, { timestamps: true });
-
-// bikeTyreSchema.methods.getStatus = function () {
-//     const isNew = (new Date() - this.createdAt) < 30 * 24 * 60 * 60 * 1000;
-//     const isOnSale = this.Salesprice < this.price;
-//     return { status: isNew ? 'New' : (isOnSale ? 'On Sale' : 'Regular Price') };
-// };
-
-// const BikeTyre = mongoose.model('BikeTyre', bikeTyreSchema);
-
-// // TruckTyre Schema
-// const truckTyreSchema = new Schema({
-//     title: String,
-//     slug: { type: String, unique: true },
-//     tyreType: String,
-//     description: String,
-//     description1: String,
-//     price: Number,
-//     Salesprice: Number,
-//     Type: String,
-//     truckBrand: [String],
-//     truckModel: [String],
-//     tyreBrand: [String],
-//     width: Number,
-//     height: Number,
-//     customs: Number,
-//     seasons: String,
-//     speedRating: String,
-//     loadCapacity: Number,
-//     material: String,
-//     manufactureMonth: String,
-//     manufactureYear: Number,
-//     warranty: String,
-//     quantity: Number,
-//     avatarImages: { type: String },
-//     thumb1Images: { type: String },
-//     thumb2Images: { type: String },
-//     thumb3Images: { type: String },
-//     thumb4Images: { type: String },
-//     thumb5Images: { type: String },
-//     thumb6Images: { type: String },
-//     addresses: [{
-//         state: String,
-//         city: String,
-//         pinCode: String,
-//         details: String,
-//     }],
-//     active: { type: Boolean, default: true },
-// }, { timestamps: true });
-
-// truckTyreSchema.methods.getStatus = function () {
-//     const isNew = (new Date() - this.createdAt) < 30 * 24 * 60 * 60 * 1000;
-//     const isOnSale = this.Salesprice < this.price;
-//     return { status: isNew ? 'New' : (isOnSale ? 'On Sale' : 'Regular Price') };
-// };
-
-// const TruckTyre = mongoose.model('TruckTyre', truckTyreSchema);
-
-
-// export { CarTyre, BikeTyre, TruckTyre };
-
-
-
-
-
-
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
@@ -484,4 +189,143 @@ tractorTyreSchema.methods.getStatus = getStatus;
 
 const TractorTyre = mongoose.model('TractorTyre', tractorTyreSchema);
 
-export { CarTyre, BikeTyre, TruckTyre, TractorTyre };
+
+
+// Battery Schema
+const batterySchema = new Schema({
+    title: String,
+    slug: { type: String, unique: true },
+    tyreType: String, // Type of tyre associated with the battery
+    description: String,
+    description1: String,
+    price: Number,
+    Salesprice: Number,
+    Type: String,
+    tyreBrand: [String],
+    capacity: String, // e.g., in Ah (Ampere-hours)
+    voltage: String, // e.g., in Volts
+    batteryweight: String, // e.g., in kg
+    batteryheight:String,
+    batteryType: { type: String, required: true },  
+    BatteryBrand: [String],
+    BatteryModel: [String],
+    warranty: String,
+    quantity: Number,
+    manufactureMonth: String,
+    manufactureYear: Number,
+    avatarImages: { type: String },
+    thumb1Images: { type: String },
+    thumb2Images: { type: String },
+    thumb3Images: { type: String },
+    thumb4Images: { type: String },
+    thumb5Images: { type: String },
+    thumb6Images: { type: String },
+    addresses: [{
+        state: String,
+        city: String,
+        pinCode: String,
+        details: String,
+    }],
+    active: { type: Boolean, default: true },
+    carbrand: [String], // Array of car brands
+    carModel: [String], // Array of car models
+    bikeBrand: [String], // Array of bike brands
+    bikeModel: [String], // Array of bike models
+}, { timestamps: true });
+
+batterySchema.methods.getStatus = getStatus;
+
+
+const Battery = mongoose.model('Battery', batterySchema);
+
+
+
+// AlloyWheel Schema
+const alloyWheelSchema = new Schema({
+    title: String,
+    slug: { type: String, unique: true },
+    tyreType: String, // Type of tyre associated (if needed)
+    alloywheelType: String ,
+    description: String,
+    description1: String,
+    price: Number,
+    Salesprice: Number,
+    Type: String,
+    tyreBrand: [String],
+    seasons: String,
+    Color: String,
+    WheelSize: String,
+    Holes: String,
+    PCD: String,
+    alloywheelBrand: [String],
+    alloywheelModel: [String],
+    warranty: String,
+    quantity: Number,
+    manufactureMonth: String,
+    manufactureYear: Number,
+    avatarImages: { type: String },
+    thumb1Images: { type: String },
+    thumb2Images: { type: String },
+    thumb3Images: { type: String },
+    thumb4Images: { type: String },
+    thumb5Images: { type: String },
+    thumb6Images: { type: String },
+    addresses: [{
+        state: String,
+        city: String,
+        pinCode: String,
+        details: String,
+    }],
+    active: { type: Boolean, default: true },
+    carbrand: [String], // Array of car brands
+    carModel: [String], // Array of car models
+    bikeBrand: [String], // Array of bike brands
+    bikeModel: [String], // Array of bike models
+}, { timestamps: true });
+
+alloyWheelSchema.methods.getStatus = getStatus;
+
+const AlloyWheel = mongoose.model('AlloyWheel', alloyWheelSchema);
+
+
+// Accessories Schema
+const accessoriesSchema = new Schema({
+    title: String,
+    slug: { type: String, unique: true },
+    tyreType: String, 
+    tyreBrand: [String],
+    accessoryType: String, 
+    description: String,
+    description1: String,
+    price: Number,
+    Salesprice: Number,
+    Type: String,
+    accessoryBrand: [String],
+    accessoryModel: [String],
+    warranty: String,
+    quantity: Number,
+    manufactureMonth: String,
+    manufactureYear: Number,
+    avatarImages: { type: String },
+    thumb1Images: { type: String },
+    thumb2Images: { type: String },
+    thumb3Images: { type: String },
+    thumb4Images: { type: String },
+    thumb5Images: { type: String },
+    thumb6Images: { type: String },
+    addresses: [{
+        state: String,
+        city: String,
+        pinCode: String,
+        details: String,
+    }],
+    active: { type: Boolean, default: true },
+}, { timestamps: true });
+
+accessoriesSchema.methods.getStatus = getStatus;
+
+const Accessories = mongoose.model('Accessories', accessoriesSchema);
+
+
+
+export { CarTyre, BikeTyre, TruckTyre, TractorTyre  , Battery , AlloyWheel , Accessories};

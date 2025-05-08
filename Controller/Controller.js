@@ -1134,300 +1134,126 @@ const updatedAccessories = await Promise.all(
  
 // --------------------- update show form  previous data ------------------------------
 
-//edit data show
-// const showFunction = async (req, res) => {
-//   try {
-//     const { id, tyreType } = req.params;
-
-//     let tyreData;
-//     if (tyreType === 'car') {
-//       tyreData = await CarTyre.findById(id);
-//     } else if (tyreType === 'bike') {
-//       tyreData = await BikeTyre.findById(id);
-//     }
-
-//     if (!tyreData) {
-//       return res.status(404).json({ message: 'Tyre not found' });
-//     }
-
-//     // Convert all IDs to names
-//     const convertedData = await convertIdsToNames(tyreType, tyreData._doc);
-    
-//     res.json(convertedData);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// // Helper function to convert IDs to names
-// async function convertIdsToNames(tyreType, data) {
-//   // Common conversion for tyreBrand
-//   const tyreBrandNames = await Promise.all(
-//     data.tyreBrand.map(async (id) => {
-//       const brand = await TyreBrand.findById(id);
-//       return brand ? brand.name : id; // Return ID if brand not found
-//     })
-//   );
-
-//   if (tyreType === 'car') {
-//     const [carBrands, carModels] = await Promise.all([
-//       Promise.all(data.carbrand.map(async (id) => {
-//         const brand = await CarBrand.findById(id);
-//         return brand ? brand.name : id;
-//       })),
-//       Promise.all(data.carModel.map(async (id) => {
-//         const model = await CarModel.findById(id);
-//         return model ? model.name : id;
-//       }))
-//     ]);
-
-//     return {
-//       ...data,
-//       carbrand: carBrands,
-//       carModel: carModels,
-//       tyreBrand: tyreBrandNames
-//     };
-//   }
-
-//   if (tyreType === 'bike') {
-//     const [bikeBrands, bikeModels] = await Promise.all([
-//       Promise.all(data.bikeBrand.map(async (id) => {
-//         const brand = await BikeBrand.findById(id);
-//         return brand ? brand.name : id;
-//       })),
-//       Promise.all(data.bikeModel.map(async (id) => {
-//         const model = await BikeModel.findById(id);
-//         return model ? model.name : id;
-//       }))
-//     ]);
-
-//     return {
-//       ...data,
-//       bikeBrand: bikeBrands,
-//       bikeModel: bikeModels,
-//       tyreBrand: tyreBrandNames
-//     };
-//   }
-
-//   return data;
-// }
-
-
-// const showFunction = async (req, res) => {
-//   try {
-//     const { id, tyreType } = req.params;
-
-//     let tyreData;
-//     if (tyreType === 'car') {
-//       tyreData = await CarTyre.findById(id);
-//     } else if (tyreType === 'bike') {
-//       tyreData = await BikeTyre.findById(id);
-//     } else if (tyreType === 'truck') { // New condition for trucks
-//       tyreData = await TruckTyre.findById(id);
-//     }
-
-//     if (!tyreData) {
-//       return res.status(404).json({ message: 'Tyre not found' });
-//     }
-
-//     // Convert all IDs to names
-//     const convertedData = await convertIdsToNames(tyreType, tyreData._doc);
-    
-//     res.json(convertedData);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// async function convertIdsToNames(tyreType, data) {
-//   // Common conversion for tyreBrand
-//   const tyreBrandNames = await Promise.all(
-//     data.tyreBrand.map(async (id) => {
-//       const brand = await TyreBrand.findById(id);
-//       return brand ? brand.name : id; // Return ID if brand not found
-//     })
-//   );
-
-//   if (tyreType === 'car') {
-//     const [carBrands, carModels] = await Promise.all([
-//       Promise.all(data.carbrand.map(async (id) => {
-//         const brand = await CarBrand.findById(id);
-//         return brand ? brand.name : id;
-//       })),
-//       Promise.all(data.carModel.map(async (id) => {
-//         const model = await CarModel.findById(id);
-//         return model ? model.name : id;
-//       }))
-//     ]);
-
-//     return {
-//       ...data,
-//       carbrand: carBrands,
-//       carModel: carModels,
-//       tyreBrand: tyreBrandNames
-//     };
-//   }
-
-//   if (tyreType === 'bike') {
-//     const [bikeBrands, bikeModels] = await Promise.all([
-//       Promise.all(data.bikeBrand.map(async (id) => {
-//         const brand = await BikeBrand.findById(id);
-//         return brand ? brand.name : id;
-//       })),
-//       Promise.all(data.bikeModel.map(async (id) => {
-//         const model = await BikeModel.findById(id);
-//         return model ? model.name : id;
-//       }))
-//     ]);
-
-//     return {
-//       ...data,
-//       bikeBrand: bikeBrands,
-//       bikeModel: bikeModels,
-//       tyreBrand: tyreBrandNames
-//     };
-//   }
-
-//   if (tyreType === 'truck') { // New condition for trucks
-//     const [truckBrands, truckModels] = await Promise.all([
-//       Promise.all(data.truckBrand.map(async (id) => {
-//         const brand = await TruckBrand.findById(id);
-//         return brand ? brand.name : id;
-//       })),
-//       Promise.all(data.truckModel.map(async (id) => {
-//         const model = await TruckModel.findById(id);
-//         return model ? model.name : id;
-//       }))
-//     ]);
-
-//     return {
-//       ...data,
-//       truckBrand: truckBrands,
-//       truckModel: truckModels,
-//       tyreBrand: tyreBrandNames
-//     };
-//   }
-
-//   return data;
-// }
 
 const showFunction = async (req, res) => {
   try {
     const { id, tyreType } = req.params;
 
-    let tyreData;
+    // Validate if the id is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid product ID' });
+    }
+
+    let productData;
     if (tyreType === 'car') {
-      tyreData = await CarTyre.findById(id);
+      productData = await CarTyre.findById(id);
     } else if (tyreType === 'bike') {
-      tyreData = await BikeTyre.findById(id);
+      productData = await BikeTyre.findById(id);
     } else if (tyreType === 'truck') {
-      tyreData = await TruckTyre.findById(id);
-    } else if (tyreType === 'tractor') { // ✅ New condition for tractor
-      tyreData = await TractorTyre.findById(id);
+      productData = await TruckTyre.findById(id);
+    } else if (tyreType === 'tractor') {
+      productData = await TractorTyre.findById(id);
+    } else if (tyreType === 'battery') {
+      productData = await Battery.findById(id); // New condition for battery
+    } else if (tyreType === 'alloywheel') {
+      productData = await AlloyWheel.findById(id); // New condition for alloy wheel
+    } else if (tyreType === 'accessories') {
+      productData = await Accessories.findById(id); // New condition for accessories
     }
 
-    if (!tyreData) {
-      return res.status(404).json({ message: 'Tyre not found' });
+    if (!productData) {
+      return res.status(404).json({ message: 'Product not found' });
     }
 
-    const convertedData = await convertIdsToNames(tyreType, tyreData._doc);
-    
+    const convertedData = await convertIdsToNames(tyreType, productData._doc);
     res.json(convertedData);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-
 async function convertIdsToNames(tyreType, data) {
+  // Helper function to check if the ID is valid
+  const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
+  // Convert tyreBrand IDs to names
   const tyreBrandNames = await Promise.all(
-    data.tyreBrand.map(async (id) => {
-      const brand = await TyreBrand.findById(id);
-      return brand ? brand.name : id;
+    (Array.isArray(data.tyreBrand) ? data.tyreBrand : [data.tyreBrand]).map(async (id) => {
+      if (isValidObjectId(id)) {
+        const brand = await TyreBrand.findById(id);
+        return brand ? brand.name : id;
+      }
+      return id; // Return the ID itself if it's not a valid ObjectId
     })
   );
 
+  // Helper function to map brand and model IDs to names
+  const getBrandAndModelNames = async (brandIds, modelIds, BrandModelClass) => {
+    const brandNames = await Promise.all(
+      (Array.isArray(brandIds) ? brandIds : [brandIds]).map(async (id) => {
+        if (isValidObjectId(id)) {
+          const brand = await BrandModelClass.findById(id);
+          return brand ? brand.name : id;
+        }
+        return id; // Return the ID if it's not a valid ObjectId
+      })
+    );
+
+    const modelNames = await Promise.all(
+      (Array.isArray(modelIds) ? modelIds : [modelIds]).map(async (id) => {
+        if (isValidObjectId(id)) {
+          const model = await BrandModelClass.findById(id);
+          return model ? model.name : id;
+        }
+        return id; // Return the ID if it's not a valid ObjectId
+      })
+    );
+
+    return { brandNames, modelNames };
+  };
+
+  // Car tyres - Convert car brand and model IDs to names
   if (tyreType === 'car') {
-    const [carBrands, carModels] = await Promise.all([
-      Promise.all(data.carbrand.map(async (id) => {
-        const brand = await CarBrand.findById(id);
-        return brand ? brand.name : id;
-      })),
-      Promise.all(data.carModel.map(async (id) => {
-        const model = await CarModel.findById(id);
-        return model ? model.name : id;
-      }))
-    ]);
-
-    return {
-      ...data,
-      carbrand: carBrands,
-      carModel: carModels,
-      tyreBrand: tyreBrandNames
-    };
+    const { brandNames: carBrandNames, modelNames: carModelNames } = await getBrandAndModelNames(data.carBrand, data.carModel, CarBrand);
+    return { ...data, carBrand: carBrandNames, carModel: carModelNames };
   }
 
+  // Bike tyres - Convert bike brand and model IDs to names
   if (tyreType === 'bike') {
-    const [bikeBrands, bikeModels] = await Promise.all([
-      Promise.all(data.bikeBrand.map(async (id) => {
-        const brand = await BikeBrand.findById(id);
-        return brand ? brand.name : id;
-      })),
-      Promise.all(data.bikeModel.map(async (id) => {
-        const model = await BikeModel.findById(id);
-        return model ? model.name : id;
-      }))
-    ]);
-
-    return {
-      ...data,
-      bikeBrand: bikeBrands,
-      bikeModel: bikeModels,
-      tyreBrand: tyreBrandNames
-    };
+    const { brandNames: bikeBrandNames, modelNames: bikeModelNames } = await getBrandAndModelNames(data.bikeBrand, data.bikeModel, BikeBrand);
+    return { ...data, bikeBrand: bikeBrandNames, bikeModel: bikeModelNames };
   }
 
+  // Truck tyres - Convert truck brand and model IDs to names
   if (tyreType === 'truck') {
-    const [truckBrands, truckModels] = await Promise.all([
-      Promise.all(data.truckBrand.map(async (id) => {
-        const brand = await TruckBrand.findById(id);
-        return brand ? brand.name : id;
-      })),
-      Promise.all(data.truckModel.map(async (id) => {
-        const model = await TruckModel.findById(id);
-        return model ? model.name : id;
-      }))
-    ]);
-
-    return {
-      ...data,
-      truckBrand: truckBrands,
-      truckModel: truckModels,
-      tyreBrand: tyreBrandNames
-    };
+    const { brandNames: truckBrandNames, modelNames: truckModelNames } = await getBrandAndModelNames(data.truckBrand, data.truckModel, TruckBrand);
+    return { ...data, truckBrand: truckBrandNames, truckModel: truckModelNames };
   }
 
-  if (tyreType === 'tractor') { // ✅ New condition for tractor
-    const [tractorBrands, tractorModels] = await Promise.all([
-      Promise.all(data.tractorBrand.map(async (id) => {
-        const brand = await TractorBrand.findById(id);
-        return brand ? brand.name : id;
-      })),
-      Promise.all(data.tractorModel.map(async (id) => {
-        const model = await TractorModel.findById(id);
-        return model ? model.name : id;
-      }))
-    ]);
+  // Tractor tyres - Convert tractor brand and model IDs to names
+  if (tyreType === 'tractor') {
+    const { brandNames: tractorBrandNames, modelNames: tractorModelNames } = await getBrandAndModelNames(data.tractorBrand, data.tractorModel, TractorBrand);
+    return { ...data, tractorBrand: tractorBrandNames, tractorModel: tractorModelNames };
+  }
 
-    return {
-      ...data,
-      tractorBrand: tractorBrands,
-      tractorModel: tractorModels,
-      tyreBrand: tyreBrandNames
-    };
+  // Battery - Convert battery brand and model IDs to names
+  if (tyreType === 'battery') {
+    const { brandNames: batteryBrandNames, modelNames: batteryModelNames } = await getBrandAndModelNames(data.batteryBrand, data.batteryModel, BatteryBrand);
+    return { ...data, batteryBrand: batteryBrandNames, batteryModel: batteryModelNames };
+  }
+
+  // Alloy wheel - Convert alloy wheel brand and model IDs to names
+  if (tyreType === 'alloywheel') {
+    const { brandNames: alloywheelBrandNames, modelNames: alloywheelModelNames } = await getBrandAndModelNames(data.alloywheelBrand, data.alloywheelModel, AlloyWheelBrand);
+    return { ...data, alloywheelBrand: alloywheelBrandNames, alloywheelModel: alloywheelModelNames };
+  }
+
+  // Accessories - Convert accessory brand and model IDs to names
+  if (tyreType === 'accessories') {
+    const { brandNames: accessoryBrandNames, modelNames: accessoryModelNames } = await getBrandAndModelNames(data.accessoryBrand, data.accessoryModel, AccessoriesBrand);
+    return { ...data, accessoryBrand: accessoryBrandNames, accessoryModel: accessoryModelNames };
   }
 
   return data;
@@ -1437,294 +1263,7 @@ async function convertIdsToNames(tyreType, data) {
 // //   // --------------UPDATE FUNCTION ----------------------
 
 
-
-// const updateFunction = async (req, res) => {
-//   // Ensure multer handles file upload before processing request
-//   upload(req, res, async function (err) {
-//     if (err instanceof multer.MulterError) {
-//       console.error("Multer error:", err);
-//       return res.status(500).send({ message: "Multer error: " + err.message });
-//     } else if (err) {
-//       console.error("Unknown error:", err);
-//       return res.status(500).send({ message: "Unknown error: " + err.message });
-//     }
-
-//     // Check if body and files are available
-//     if (!req.body || !req.files) {
-//       return res.status(400).send({ message: "No data or files uploaded" });
-//     }
-//     console.log(req.body);
-//     console.log(req.files);
-
-//     const { id } = req.params;
-//     const {
-//       title, tyreType, carbrand, addresses: rawAddresses, pinCode, details, carModel,
-//       bikeBrand, bikeModel, tyreBrand, tyreModel, width, height, customs,
-//       seasons, speedRating, loadCapacity, price, Salesprice, description,
-//       description1, warranty, city, state, manufactureMonth, manufactureYear,
-//       fronttyre, reartyre,  quantity, material, avatarImages, thumb1Images, thumb2Images, thumb3Images, thumb4Images, thumb5Images, thumb6Images,
-//       slug // Add the slug field
-//     } = req.body;
-
-//     let TyreModel;
-
-//     // Determine tyre model (car or bike)
-//     switch (tyreType) {
-//       case 'car':
-//         TyreModel = CarTyre;
-//         break;
-//       case 'bike':
-//         TyreModel = BikeTyre;
-//         break;
-//       default:
-//         return res.status(400).send({ message: 'Invalid tyre type' });
-//     }
-
-//     // Parse addresses if needed
-//     let addresses = [];
-//     try {
-//       addresses = Array.isArray(rawAddresses) ? rawAddresses : JSON.parse(rawAddresses);
-//       console.log("Parsed Addresses:", addresses);
-//     } catch (e) {
-//       console.error("Error parsing addresses:", e);
-//       return res.status(400).send({ message: "Invalid addresses format" });
-//     }
-
-//     try {
-//       // Find the existing tyre
-//       const existingTyre = await TyreModel.findById(id);
-//       if (!existingTyre) {
-//         return res.status(404).send({ message: `Tyre with ID ${id} not found `});
-//       }
-
-//       // Initialize image variables with existing values
-//       let avatarImages = existingTyre.avatarImages || '';
-//       let thumb1Images = existingTyre.thumb1Images || '';
-//       let thumb2Images = existingTyre.thumb2Images || '';
-//       let thumb3Images = existingTyre.thumb3Images || '';
-//       let thumb4Images = existingTyre.thumb4Images || '';
-//       let thumb5Images = existingTyre.thumb5Images || '';
-//       let thumb6Images = existingTyre.thumb6Images || '';
-
-//       // Handle image uploads
-//       if (req.files) {
-//         avatarImages = req.files['avatar'] ? req.files['avatar'][0].filename : avatarImages;
-//         thumb1Images = req.files['thumb1'] ? req.files['thumb1'][0].filename : thumb1Images;
-//         thumb2Images = req.files['thumb2'] ? req.files['thumb2'][0].filename : thumb2Images;
-//         thumb3Images = req.files['thumb3'] ? req.files['thumb3'][0].filename : thumb3Images;
-//         thumb4Images = req.files['thumb4'] ? req.files['thumb4'][0].filename : thumb4Images;
-//         thumb5Images = req.files['thumb5'] ? req.files['thumb5'][0].filename : thumb5Images;
-//         thumb6Images = req.files['thumb6'] ? req.files['thumb6'][0].filename : thumb6Images;
-//       }
-
-//       // If slug is provided, use it; otherwise, generate a default slug from the title
-//       const newSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-
-//       // Update the tyre
-//       const updatedTyre = await TyreModel.findByIdAndUpdate(
-//         id,
-//         {
-//           title,
-//           carbrand,
-//           carModel,
-//           tyreType,
-//           bikeBrand,
-//           bikeModel,
-//           tyreBrand,
-//           tyreModel,
-//           width,
-//           addresses,
-//           height,
-//           customs,
-//           seasons,
-//           fronttyre,
-//           reartyre,
-//           speedRating,
-//           loadCapacity,
-//           material,
-//           avatarImages,
-//           thumb1Images,
-//           thumb2Images,
-//           thumb3Images,
-//           thumb4Images,
-//           thumb5Images,
-//           thumb6Images,
-//           manufactureMonth,
-//           manufactureYear,
-//           price,
-//           Salesprice,
-//           description,
-//           description1,
-//           warranty,
-//           quantity,
-//           city,
-//           state,
-//           pinCode,
-//           details,
-//           slug: newSlug // Add slug field to the update
-//         },
-//         { new: true } // Return the updated document
-//       );
-
-//       if (updatedTyre) {
-//         res.send({ message: `${tyreType.charAt(0).toUpperCase()}${tyreType.slice(1)} tyre with ID ${id} updated successfully`, updatedTyre });
-//       } else {
-//         res.status(404).send({ message: `Tyre with ID ${id} not found `});
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).send({ message: `Error updating ${tyreType} tyre `});
-//     }
-//   });
-// };
-
-
-// const updateFunction = async (req, res) => {
-//   // Ensure multer handles file upload before processing request
-//   upload(req, res, async function (err) {
-//     if (err instanceof multer.MulterError) {
-//       console.error("Multer error:", err);
-//       return res.status(500).send({ message: "Multer error: " + err.message });
-//     } else if (err) {
-//       console.error("Unknown error:", err);
-//       return res.status(500).send({ message: "Unknown error: " + err.message });
-//     }
-
-//     // Check if body and files are available
-//     if (!req.body || !req.files) {
-//       return res.status(400).send({ message: "No data or files uploaded" });
-//     }
-//     console.log(req.body);
-//     console.log(req.files);
-
-//     const { id } = req.params;
-//     const {
-//       title, tyreType, carbrand, addresses: rawAddresses, pinCode, details, carModel,
-//       bikeBrand, bikeModel, tyreBrand, tyreModel, width, height, customs,
-//       seasons, speedRating, loadCapacity, price, Salesprice, description,
-//       description1, warranty, city, state, manufactureMonth, manufactureYear,
-//       fronttyre, reartyre, quantity, material, avatarImages, thumb1Images, thumb2Images, thumb3Images, thumb4Images, thumb5Images, thumb6Images,
-//       slug // Add the slug field
-//     } = req.body;
-
-//     let TyreModel;
-
-//     // Determine tyre model (car, bike, or truck)
-//     switch (tyreType) {
-//       case 'car':
-//         TyreModel = CarTyre;
-//         break;
-//       case 'bike':
-//         TyreModel = BikeTyre;
-//         break;
-//       case 'truck':
-//         TyreModel = TruckTyre; // Assuming TruckTyre is defined elsewhere
-//         break;
-//       default:
-//         return res.status(400).send({ message: 'Invalid tyre type' });
-//     }
-
-//     // Parse addresses if needed
-//     let addresses = [];
-//     try {
-//       addresses = Array.isArray(rawAddresses) ? rawAddresses : JSON.parse(rawAddresses);
-//       console.log("Parsed Addresses:", addresses);
-//     } catch (e) {
-//       console.error("Error parsing addresses:", e);
-//       return res.status(400).send({ message: "Invalid addresses format" });
-//     }
-
-//     try {
-//       // Find the existing tyre
-//       const existingTyre = await TyreModel.findById(id);
-//       if (!existingTyre) {
-//         return res.status(404).send({ message: `Tyre with ID ${id} not found `});
-//       }
-
-//       // Initialize image variables with existing values
-//       let avatarImages = existingTyre.avatarImages || '';
-//       let thumb1Images = existingTyre.thumb1Images || '';
-//       let thumb2Images = existingTyre.thumb2Images || '';
-//       let thumb3Images = existingTyre.thumb3Images || '';
-//       let thumb4Images = existingTyre.thumb4Images || '';
-//       let thumb5Images = existingTyre.thumb5Images || '';
-//       let thumb6Images = existingTyre.thumb6Images || '';
-
-//       // Handle image uploads
-//       if (req.files) {
-//         avatarImages = req.files['avatar'] ? req.files['avatar'][0].filename : avatarImages;
-//         thumb1Images = req.files['thumb1'] ? req.files['thumb1'][0].filename : thumb1Images;
-//         thumb2Images = req.files['thumb2'] ? req.files['thumb2'][0].filename : thumb2Images;
-//         thumb3Images = req.files['thumb3'] ? req.files['thumb3'][0].filename : thumb3Images;
-//         thumb4Images = req.files['thumb4'] ? req.files['thumb4'][0].filename : thumb4Images;
-//         thumb5Images = req.files['thumb5'] ? req.files['thumb5'][0].filename : thumb5Images;
-//         thumb6Images = req.files['thumb6'] ? req.files['thumb6'][0].filename : thumb6Images;
-//       }
-
-//       // If slug is provided, use it; otherwise, generate a default slug from the title
-//       const newSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-
-//       // Update the tyre
-//       const updatedTyre = await TyreModel.findByIdAndUpdate(
-//         id,
-//         {
-//           title,
-//           carbrand,
-//           carModel,
-//           tyreType,
-//           bikeBrand,
-//           bikeModel,
-//           tyreBrand,
-//           tyreModel,
-//           width,
-//           addresses,
-//           height,
-//           customs,
-//           seasons,
-//           fronttyre,
-//           reartyre,
-//           speedRating,
-//           loadCapacity,
-//           material,
-//           avatarImages,
-//           thumb1Images,
-//           thumb2Images,
-//           thumb3Images,
-//           thumb4Images,
-//           thumb5Images,
-//           thumb6Images,
-//           manufactureMonth,
-//           manufactureYear,
-//           price,
-//           Salesprice,
-//           description,
-//           description1,
-//           warranty,
-//           quantity,
-//           city,
-//           state,
-//           pinCode,
-//           details,
-//           slug: newSlug // Add slug field to the update
-//         },
-//         { new: true } // Return the updated document
-//       );
-
-//       if (updatedTyre) {
-//         res.send({ message: `${tyreType.charAt(0).toUpperCase()}${tyreType.slice(1)} tyre with ID ${id} updated successfully`, updatedTyre });
-//       } else {
-//         res.status(404).send({ message: `Tyre with ID ${id} not found `});
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).send({ message: `Error updating ${tyreType} tyre `});
-//     }
-//   });
-// };
-
-
 const updateFunction = async (req, res) => {
-  // Ensure multer handles file upload before processing request
   upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       console.error("Multer error:", err);
@@ -1734,12 +1273,9 @@ const updateFunction = async (req, res) => {
       return res.status(500).send({ message: "Unknown error: " + err.message });
     }
 
-    // Check if body and files are available
-    if (!req.body || !req.files) {
-      return res.status(400).send({ message: "No data or files uploaded" });
+    if (!req.body) {
+      return res.status(400).send({ message: "No data uploaded" });
     }
-    console.log(req.body);
-    console.log(req.files);
 
     const { id } = req.params;
     const {
@@ -1747,127 +1283,126 @@ const updateFunction = async (req, res) => {
       bikeBrand, bikeModel, tyreBrand, tyreModel, width, height, customs,
       seasons, speedRating, loadCapacity, price, Salesprice, description,
       description1, warranty, city, state, manufactureMonth, manufactureYear,
-      fronttyre, reartyre, quantity, material, avatarImages, thumb1Images, thumb2Images, thumb3Images, thumb4Images, thumb5Images, thumb6Images,
-      slug // Add the slug field
+      fronttyre, reartyre, quantity, material, slug, batteryType, BatteryBrand, BatteryModel,
+      capacity, voltage, batteryweight, batteryheight, alloywheelType, Color, WheelSize, Holes, PCD,
+      alloywheelBrand, alloywheelModel, accessoryBrand, accessoryModel, accessoryType
     } = req.body;
 
-    let TyreModel;
+    let ProductModel;
 
-    // Determine tyre model (car, bike, truck, or tractor)
     switch (tyreType) {
-      case 'car':
-        TyreModel = CarTyre;
-        break;
-      case 'bike':
-        TyreModel = BikeTyre;
-        break;
-      case 'truck':
-        TyreModel = TruckTyre; // Assuming TruckTyre is defined elsewhere
-        break;
-      case 'tractor':
-        TyreModel = TractorTyre; // Add this line for tractor
-        break;
+      case 'car': ProductModel = CarTyre; break;
+      case 'bike': ProductModel = BikeTyre; break;
+      case 'truck': ProductModel = TruckTyre; break;
+      case 'tractor': ProductModel = TractorTyre; break;
+      case 'battery': ProductModel = Battery; break;
+      case 'alloywheel': ProductModel = AlloyWheel; break;
+      case 'accessories': ProductModel = Accessories; break;
       default:
-        return res.status(400).send({ message: 'Invalid tyre type' });
+        return res.status(400).send({ message: 'Invalid product type' });
     }
 
-    // Parse addresses if needed
     let addresses = [];
     try {
       addresses = Array.isArray(rawAddresses) ? rawAddresses : JSON.parse(rawAddresses);
-      console.log("Parsed Addresses:", addresses);
     } catch (e) {
       console.error("Error parsing addresses:", e);
       return res.status(400).send({ message: "Invalid addresses format" });
     }
 
     try {
-      // Find the existing tyre
-      const existingTyre = await TyreModel.findById(id);
-      if (!existingTyre) {
-        return res.status(404).send({ message: `Tyre with ID ${id} not found `});
+      const existingProduct = await ProductModel.findById(id);
+      if (!existingProduct) {
+        return res.status(404).send({ message: `Product with ID ${id} not found` });
       }
 
-      // Initialize image variables with existing values
-      let avatarImages = existingTyre.avatarImages || '';
-      let thumb1Images = existingTyre.thumb1Images || '';
-      let thumb2Images = existingTyre.thumb2Images || '';
-      let thumb3Images = existingTyre.thumb3Images || '';
-      let thumb4Images = existingTyre.thumb4Images || '';
-      let thumb5Images = existingTyre.thumb5Images || '';
-      let thumb6Images = existingTyre.thumb6Images || '';
+      // Handle image uploads and fallback to existing if no new image is uploaded
+      const getImage = (key, fallback) => (req.files[key] ? req.files[key][0].location : fallback);
+      const avatarImages = getImage('avatar', existingProduct.avatarImages || '');
+      const thumb1Images = getImage('thumb1', existingProduct.thumb1Images || '');
+      const thumb2Images = getImage('thumb2', existingProduct.thumb2Images || '');
+      const thumb3Images = getImage('thumb3', existingProduct.thumb3Images || '');
+      const thumb4Images = getImage('thumb4', existingProduct.thumb4Images || '');
+      const thumb5Images = getImage('thumb5', existingProduct.thumb5Images || '');
+      const thumb6Images = getImage('thumb6', existingProduct.thumb6Images || '');
 
-      // Handle image uploads
-      if (req.files) {
-        avatarImages = req.files['avatar'] ? req.files['avatar'][0].filename : avatarImages;
-        thumb1Images = req.files['thumb1'] ? req.files['thumb1'][0].filename : thumb1Images;
-        thumb2Images = req.files['thumb2'] ? req.files['thumb2'][0].filename : thumb2Images;
-        thumb3Images = req.files['thumb3'] ? req.files['thumb3'][0].filename : thumb3Images;
-        thumb4Images = req.files['thumb4'] ? req.files['thumb4'][0].filename : thumb4Images;
-        thumb5Images = req.files['thumb5'] ? req.files['thumb5'][0].filename : thumb5Images;
-        thumb6Images = req.files['thumb6'] ? req.files['thumb6'][0].filename : thumb6Images;
-      }
+      // Normalize fields to arrays if needed
+      const normalizeArray = (val, fallback) => Array.isArray(val)
+        ? val
+        : val
+        ? [val]
+        : fallback;
 
-      // If slug is provided, use it; otherwise, generate a default slug from the title
-      const newSlug = slug || title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+      const newSlug = (typeof slug === 'string' && slug.trim() !== '')
+        ? slug.trim()
+        : existingProduct.slug;
 
-      // Update the tyre
-      const updatedTyre = await TyreModel.findByIdAndUpdate(
-        id,
-        {
-          title,
-          carbrand,
-          carModel,
-          tyreType,
-          bikeBrand,
-          bikeModel,
-          tyreBrand,
-          tyreModel,
-          width,
-          addresses,
-          height,
-          customs,
-          seasons,
-          fronttyre,
-          reartyre,
-          speedRating,
-          loadCapacity,
-          material,
-          avatarImages,
-          thumb1Images,
-          thumb2Images,
-          thumb3Images,
-          thumb4Images,
-          thumb5Images,
-          thumb6Images,
-          manufactureMonth,
-          manufactureYear,
-          price,
-          Salesprice,
-          description,
-          description1,
-          warranty,
-          quantity,
-          city,
-          state,
-          pinCode,
-          details,
-          slug: newSlug // Add slug field to the update
-        },
-        { new: true } // Return the updated document
-      );
+      const updateData = {
+        title: title || existingProduct.title,
+        tyreType: tyreType || existingProduct.tyreType,
+        carbrand: normalizeArray(carbrand, existingProduct.carbrand),
+        addresses: addresses.length > 0 ? addresses : existingProduct.addresses,
+        pinCode: pinCode || existingProduct.pinCode,
+        details: details || existingProduct.details,
+        carModel: normalizeArray(carModel, existingProduct.carModel),
+        bikeBrand: normalizeArray(bikeBrand, existingProduct.bikeBrand),
+        bikeModel: normalizeArray(bikeModel, existingProduct.bikeModel),
+        tyreBrand: tyreBrand || existingProduct.tyreBrand,
+        tyreModel: tyreModel || existingProduct.tyreModel,
+        width: width || existingProduct.width,
+        height: height || existingProduct.height,
+        customs: customs || existingProduct.customs,
+        seasons: seasons || existingProduct.seasons,
+        speedRating: speedRating || existingProduct.speedRating,
+        loadCapacity: loadCapacity || existingProduct.loadCapacity,
+        price: price || existingProduct.price,
+        Salesprice: Salesprice || existingProduct.Salesprice,
+        description: description || existingProduct.description,
+        description1: description1 || existingProduct.description1,
+        warranty: warranty || existingProduct.warranty,
+        city: city || existingProduct.city,
+        state: state || existingProduct.state,
+        manufactureMonth: manufactureMonth || existingProduct.manufactureMonth,
+        manufactureYear: manufactureYear || existingProduct.manufactureYear,
+        fronttyre: fronttyre || existingProduct.fronttyre,
+        reartyre: reartyre || existingProduct.reartyre,
+        quantity: quantity || existingProduct.quantity,
+        material: material || existingProduct.material,
+        slug: newSlug,
+        batteryType: batteryType || existingProduct.batteryType,
+        BatteryBrand: BatteryBrand || existingProduct.BatteryBrand,
+        BatteryModel: BatteryModel || existingProduct.BatteryModel,
+        capacity: capacity || existingProduct.capacity,
+        voltage: voltage || existingProduct.voltage,
+        batteryweight: batteryweight || existingProduct.batteryweight,
+        batteryheight: batteryheight || existingProduct.batteryheight,
+        alloywheelType: alloywheelType || existingProduct.alloywheelType,
+        Color: Color || existingProduct.Color,
+        WheelSize: WheelSize || existingProduct.WheelSize,
+        Holes: Holes || existingProduct.Holes,
+        PCD: PCD || existingProduct.PCD,
+        alloywheelBrand: alloywheelBrand || existingProduct.alloywheelBrand,
+        alloywheelModel: alloywheelModel || existingProduct.alloywheelModel,
+        accessoryBrand: accessoryBrand || existingProduct.accessoryBrand,
+        accessoryModel: accessoryModel || existingProduct.accessoryModel,
+        accessoryType: accessoryType || existingProduct.accessoryType,
+        avatarImages,
+        thumb1Images, thumb2Images, thumb3Images, thumb4Images, thumb5Images, thumb6Images
+      };
 
-      if (updatedTyre) {
-        res.send({ message: `${tyreType.charAt(0).toUpperCase()}${tyreType.slice(1)} tyre with ID ${id} updated successfully`, updatedTyre });
-      } else {
-        res.status(404).send({ message: `Tyre with ID ${id} not found `});
-      }
+      // Update the product
+      await ProductModel.findByIdAndUpdate(id, updateData, { new: true });
+
+      res.send({ message: "Product updated successfully" });
     } catch (err) {
-      console.error(err);
-      res.status(500).send({ message: `Error updating ${tyreType} tyre `});
+      console.error("Error processing update:", err);
+      res.status(500).send({ message: "Error processing update" });
     }
   });
 };
+
+
+
 
 // ------------------- delete function ------------------------
 

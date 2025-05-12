@@ -1,5 +1,5 @@
 import express from 'express';
-import { accessoriesBrandAddFunction, accessoriesBrandDeleteFunction, accessoriesBrandGetById, accessoriesBrandGetFunction, accessoriesBrandUpdateFunction, activeAccessoriesBrand, countAccessoriesFunction, getForAccessoriesBrand } from '../Controller/AccessoriesBrandController.js';
+import { accessoriesBrandAddFunction, accessoriesBrandDeleteFunction, accessoriesBrandGetById, accessoriesBrandGetFunction, accessoriesBrandUpdateFunction, activeAccessoriesBrand, countAccessoriesFunction, getForAccessoriesBrand } from '../Controller/AccessoriesbrandController.js';
 
 const AccessoriesBrandRoute = express.Router()
 

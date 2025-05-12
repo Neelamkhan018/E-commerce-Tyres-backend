@@ -1,5 +1,5 @@
 import express from 'express';
-import { accessoriesAddFunction, accessoriesDeleteFunction, accessoriesEditGetFunction, accessoriesGetFunction, accessoriesUpdateFunction, activeAccessoriesFunction } from '../Controller/AccessoriesModelController.js';
+import { accessoriesAddFunction, accessoriesDeleteFunction, accessoriesEditGetFunction, accessoriesGetFunction, accessoriesUpdateFunction, activeAccessoriesFunction } from '../Controller/Accessoriesmcontroller.js';
 
 const AccessoriesModelRoute = express.Router()
 

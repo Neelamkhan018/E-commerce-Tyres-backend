@@ -82,6 +82,11 @@ const FrontendLogin = async (req, res) => {
 };
 
 
+
+
+
+
+
 const loginpage = async (req,res) => {
   const { emailOrMobile } = req.body;
   
@@ -100,10 +105,79 @@ const loginpage = async (req,res) => {
 }
 
 
+
+
+const FrontendUpdate = async (req, res) => {
+  const { name, lastname, companyname, mobilenumber, email, address, city, state, pincode } = req.body;
+
+  try {
+      // Check if the user exists based on the mobile number
+      const existingUser = await frontlogin.findOne({ mobilenumber });
+      if (!existingUser) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Update user details
+      existingUser.name = name || existingUser.name;
+      existingUser.lastname = lastname || existingUser.lastname;
+      existingUser.companyname = companyname || existingUser.companyname;
+      existingUser.email = email || existingUser.email;
+      existingUser.address = address || existingUser.address;
+      existingUser.city = city || existingUser.city;
+      existingUser.state = state || existingUser.state;
+      existingUser.pincode = pincode || existingUser.pincode;
+
+      // Save the updated user to the database
+      const updatedUser = await existingUser.save();
+
+      // Return success response
+      return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Something went wrong. Please try again later.' });
+  }
+};
+
+
+
+
+
+
+
+
+
+// // Get user data by mobile number
+const getupdatedetails = async (req, res) => {
+
+  const { mobilenumber } = req.query; // Get mobile number from query parameters
+
+  try {
+    const user = await frontlogin.findOne({ mobilenumber });
+    if (!user) {
+      return res.status(404).json({ message: 'User  not found' });
+    }
+
+    // Return user details excluding sensitive information
+    const { name, lastname, companyname, email, address, city, state, pincode } = user;
+    return res.status(200).json({ name, lastname, companyname, email, address, city, state, pincode });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Something went wrong. Please try again later.' });
+  }
+}
+
+
+
+
+
+
+
 export {
   FrontendRegister,
   FrontendLogin,
-  loginpage
+  loginpage ,
+  FrontendUpdate,
+  getupdatedetails
 
 
 };

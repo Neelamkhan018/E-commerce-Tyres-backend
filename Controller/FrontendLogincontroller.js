@@ -71,7 +71,8 @@ const FrontendLogin = async (req, res) => {
 
     return res.status(200).json({
       message: `OTP sent to ${mobilenumber}`,
-      otp, // Send OTP in the response
+      otp,
+      _id: existingUser._id// Send OTP in the response
     });
   } catch (error) {
     console.error(error);
@@ -108,29 +109,34 @@ const loginpage = async (req,res) => {
 
 
 const FrontendUpdate = async (req, res) => {
-  const { name, lastname, companyname, mobilenumber, email, address, city, state, pincode } = req.body;
+  const { id, name, lastname, companyname, mobilenumber, email, address, city, state, pincode } = req.body;
 
   try {
-      // Check if the user exists based on the mobile number
-      const existingUser = await frontlogin.findOne({ mobilenumber });
+      // Find the user by their ID
+      const existingUser = await frontlogin.findById(id); // Use ID here
       if (!existingUser) {
           return res.status(404).json({ message: 'User not found' });
       }
 
-      // Update user details
+
+      // Update user fields
       existingUser.name = name || existingUser.name;
       existingUser.lastname = lastname || existingUser.lastname;
       existingUser.companyname = companyname || existingUser.companyname;
+      existingUser.mobilenumber = mobilenumber || existingUser.mobilenumber;
       existingUser.email = email || existingUser.email;
       existingUser.address = address || existingUser.address;
       existingUser.city = city || existingUser.city;
       existingUser.state = state || existingUser.state;
       existingUser.pincode = pincode || existingUser.pincode;
 
-      // Save the updated user to the database
+      
+
+      // Save updated user to the database
       const updatedUser = await existingUser.save();
 
-      // Return success response
+
+      // Return success response with the updated user
       return res.status(200).json({ message: 'User updated successfully', user: updatedUser });
   } catch (error) {
       console.error(error);
@@ -143,26 +149,21 @@ const FrontendUpdate = async (req, res) => {
 
 
 
+// // Get user data by id
+const getdetailsbyId = async (req, res) => {
+try {
+    const { id } = req.params;
 
+    const user = await frontlogin.findById(id);
 
-
-// // Get user data by mobile number
-const getupdatedetails = async (req, res) => {
-
-  const { mobilenumber } = req.query; // Get mobile number from query parameters
-
-  try {
-    const user = await frontlogin.findOne({ mobilenumber });
     if (!user) {
-      return res.status(404).json({ message: 'User  not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Return user details excluding sensitive information
-    const { name, lastname, companyname, email, address, city, state, pincode } = user;
-    return res.status(200).json({ name, lastname, companyname, email, address, city, state, pincode });
+    res.status(200).json(user);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Something went wrong. Please try again later.' });
+    console.error("Error fetching user details by ID:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
@@ -177,7 +178,6 @@ export {
   FrontendLogin,
   loginpage ,
   FrontendUpdate,
-  getupdatedetails
-
+  getdetailsbyId
 
 };

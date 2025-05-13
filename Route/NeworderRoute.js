@@ -1,5 +1,5 @@
 import express from 'express'
-import { CancelOrder, createOrder, frontorderlist, getAllOrders, getcancelhistory, getcustomer,  getHomeDeliveryOrders, getOrderById, getTotalAmountByClientId, getTotalAmountPerDealer, rejectorder, status } from '../Controller/Newordercontroller.js'
+import { CancelOrder, createOrder, getAllOrders, getcancelhistory, getcustomer,  getHomeDeliveryOrders, getOrderById, getOrdersByCustomer, getTotalAmountByClientId, getTotalAmountPerDealer, rejectorder, status } from '../Controller/Newordercontroller.js'
 
 
 
@@ -21,10 +21,8 @@ const NeworderRoute = express.Router()
 .get("/get-total-amount-by-client/:clientId", getTotalAmountByClientId)
 
 
-.get("/customer/:customerId",frontorderlist)
 
-
-
+.get("/orders/customer/:id", getOrdersByCustomer);
 
 
 

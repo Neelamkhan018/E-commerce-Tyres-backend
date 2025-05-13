@@ -6,20 +6,104 @@ import ShippingAddress from "../Models/ShippingAddressmodel.js";
 
 
 
+// const AddressBook = async (req, res) => {
+//   try {
+//     // Destructure data from the request body
+//     const {
+//       firstName,
+//       lastName,
+//       streetAddress,
+//       townOrCity,
+//       state,
+//       pincode
+//     } = req.body;
+
+//     // Create a new billing address document
+//     const newAddress = new BillingAddress({
+//       firstName,
+//       lastName,
+//       streetAddress,
+//       townOrCity,
+//       state,
+//       pincode
+//     });
+
+//     // Save the address to the database
+//     await newAddress.save();
+
+//     // Send a success response
+//     res.status(201).json({
+//       message: 'Billing address added successfully!',
+//       address: newAddress
+//     });
+//   } catch (error) {
+//     // Handle errors (e.g., validation errors)
+//     console.error(error);
+//     res.status(500).json({
+//       message: 'Error adding billing address',
+//       error: error.message
+//     });
+//   }
+// };
+
+
+// const shipping = async (req, res) => {
+//   try {
+//     // Destructure data from the request body
+//     const {
+//       firstName,
+//       lastName,
+//       streetAddress,
+//       townOrCity,
+//       state,
+//       pincode
+//     } = req.body;
+
+//     // Create a new billing address document
+//     const newAddress = new ShippingAddress({
+//       firstName,
+//       lastName,
+//       streetAddress,
+//       townOrCity,
+//       state,
+//       pincode
+//     });
+
+//     // Save the address to the database
+//     await newAddress.save();
+
+//     // Send a success response
+//     res.status(201).json({
+//       message: 'Shipping address added successfully!',
+//       address: newAddress
+//     });
+//   } catch (error) {
+//     // Handle errors (e.g., validation errors)
+//     console.error(error);
+//     res.status(500).json({
+//       message: 'Error adding Shipping address',
+//       error: error.message
+//     });
+//   }
+// };
+
+
+
+
+
+
+// Controller for adding billing address
 const AddressBook = async (req, res) => {
   try {
-    // Destructure data from the request body
-    const {
-      firstName,
-      lastName,
-      streetAddress,
-      townOrCity,
-      state,
-      pincode
-    } = req.body;
+    const { userId, firstName, lastName, streetAddress, townOrCity, state, pincode } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: 'UserId is required' });
+    }
 
     // Create a new billing address document
     const newAddress = new BillingAddress({
+      userId, // Add userId to associate the address with the user
       firstName,
       lastName,
       streetAddress,
@@ -37,7 +121,6 @@ const AddressBook = async (req, res) => {
       address: newAddress
     });
   } catch (error) {
-    // Handle errors (e.g., validation errors)
     console.error(error);
     res.status(500).json({
       message: 'Error adding billing address',
@@ -47,20 +130,18 @@ const AddressBook = async (req, res) => {
 };
 
 
+// Controller for adding shipping address
 const shipping = async (req, res) => {
   try {
-    // Destructure data from the request body
-    const {
-      firstName,
-      lastName,
-      streetAddress,
-      townOrCity,
-      state,
-      pincode
-    } = req.body;
+    const { userId, firstName, lastName, streetAddress, townOrCity, state, pincode } = req.body;
 
-    // Create a new billing address document
+    if (!userId) {
+      return res.status(400).json({ message: 'UserId is required' });
+    }
+
+    // Create a new shipping address document
     const newAddress = new ShippingAddress({
+      userId, // Add userId to associate the address with the user
       firstName,
       lastName,
       streetAddress,
@@ -78,29 +159,38 @@ const shipping = async (req, res) => {
       address: newAddress
     });
   } catch (error) {
-    // Handle errors (e.g., validation errors)
     console.error(error);
     res.status(500).json({
-      message: 'Error adding Shipping address',
+      message: 'Error adding shipping address',
       error: error.message
     });
   }
 };
 
 
+
+
 const getAddressBook = async (req, res) => {
+  const { userId } = req.params; // Assuming you pass userId as a parameter in the URL
+
   try {
-    const customer = await BillingAddress.findOne({ email: req.query.email }); // Replace with actual user identification logic
-    if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
+    // Fetch both billing and shipping addresses based on the userId
+    const shippingAddress = await ShippingAddress.findOne({ userId });
+    const billingAddress = await BillingAddress.findOne({ userId });
+
+    if (!shippingAddress || !billingAddress) {
+      return res.status(404).json({ message: "Addresses not found" });
     }
+
     res.status(200).json({
-      customerAddresses: customer.addresses, // Assuming addresses is an array field in your customer model
+      shippingAddress,
+      billingAddress,
     });
   } catch (error) {
     res.status(500).json({ message: "Error fetching address book", error: error.message });
   }
 };
+
 
 
 

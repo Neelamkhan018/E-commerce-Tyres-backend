@@ -464,33 +464,26 @@ const getOrderById = async (req, res) => {
   };
 
 
+// GET /orders/customer/:id
+const getOrdersByCustomer = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const orders = await Order.find({ customer: id })
+      .populate("customer", "name email")
+      .populate("items.productId", "title image");
 
-const frontorderlist = async (req,res) => {
-try {
-    const { customerId } = req.query; // Get customerId from query parameters
-    if (!customerId) {
-      return res.status(400).json({ message: "Customer ID is required" });
-    }
-
-    console.log("Fetching orders for customerId:", customerId);
-
-    // Fetch orders only for this customer
-    const orders = await Order.find({ customer: customerId })
-      .populate("items.productId", "title image")
-      .sort({ createdAt: -1 });
-
-    console.log("Fetched Orders:", orders);
-    res.json(orders);
+    res.status(200).json(orders);
   } catch (error) {
-    console.error("Error fetching orders:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error fetching orders by customer ID:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
+
 
 
 
   export {createOrder,getAllOrders,CancelOrder, getOrderById , getcancelhistory , getcustomer , rejectorder , status ,
-  getHomeDeliveryOrders , getTotalAmountPerDealer , getTotalAmountByClientId ,
-  frontorderlist
+  getHomeDeliveryOrders , getTotalAmountPerDealer , getTotalAmountByClientId , getOrdersByCustomer
+
   }

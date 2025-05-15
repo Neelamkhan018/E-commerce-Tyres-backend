@@ -1594,6 +1594,8 @@ const Searchcarbike = async (req, res) => {
         if (tyreBrand) query.tyreBrand = { $in: [tyreBrand] };
         if (seasons) query.seasons = seasons; // Assuming seasons is a string
 
+
+
         console.log("Query for car:", query); // Log the constructed query
 
         const results = await CarTyre.find(query);

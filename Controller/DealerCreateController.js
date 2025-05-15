@@ -1,28 +1,30 @@
-import express from 'express';
+
 import dealeraccountModel from "../Models/DealerCreateModel.js";
-import Businessmodel from "../Models/BusinessDetails.js"
+
 import { randomInt } from 'crypto';
 
 const otpStore = new Map();
 import nodemailer from 'nodemailer'
 import Gstmodel from '../Models/GstModel.js';
-import DealerPriceModel from '../Models/Dealerpricemodel.js';
+
 
 const generateOtp = () => randomInt(100000, 999999).toString(); // 6-digit OTP
 
 
-const AddcreateOtp = async (req, res) => {
-  const { mobileNumber, email, type } = req.body;
 
-  const otp = generateOtp();
-  if (type === 'mobile') {
-    otpStore.set(mobileNumber, otp);
-    return res.status(200).json({ message: "Mobile OTP generated", otp }); // Send OTP back in response
-  } else if (type === 'email') {
-    otpStore.set(email, otp);
-    return res.status(200).json({ message: "Email OTP generated", otp }); // Send OTP back in response
-  }
-};
+
+// Email transporter setup
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        }
+});
+
+
 
 
 // // Function to send OTP via email
@@ -36,7 +38,7 @@ const sendOTPEmail = async (email, otp) => {
 
 
 
-//  Dealer - register of dealer
+// ------------------ Dealer ----------------- register of dealer------------
 
 const AddCreateDealer = async (req, res) => {
   console.log('Received Data:', req.body); // Debugging
@@ -85,8 +87,85 @@ const AddCreateDealer = async (req, res) => {
 
 
 
+// const AddcreateOtp = async (req, res) => {
+//   const { mobileNumber, email, type } = req.body;
 
-// ------- Add Login -----------------
+//   const otp = generateOtp();
+//   if (type === 'mobile') {
+//     otpStore.set(mobileNumber, otp);
+//     return res.status(200).json({ message: "Mobile OTP generated", otp }); // Send OTP back in response
+//   } else if (type === 'email') {
+//     otpStore.set(email, otp);
+//     return res.status(200).json({ message: "Email OTP generated", otp }); // Send OTP back in response
+//   }
+// };
+
+
+const AddcreateOtp = async (req, res) => {
+  const { mobileNumber, email, type } = req.body;
+
+  const otp = generateOtp();
+  
+  if (type === 'mobile') {
+    otpStore.set(mobileNumber, otp);
+    return res.status(200).json({ message: "Mobile OTP generated", otp }); // Only for dev/debugging
+  } else if (type === 'email') {
+    otpStore.set(email, otp);
+
+    // Send Email using nodemailer
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: 'Your Email OTP for Dealer Registration',
+      text: `Your OTP for verifying your email is: ${otp}`,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error('Error sending email OTP:', err);
+        return res.status(500).json({ message: 'Failed to send OTP email' });
+      } else {
+        return res.status(200).json({ message: "Email OTP sent successfully" });
+      }
+    });
+  }
+};
+
+
+
+// ------- Dealer Add Login -----------------
+
+// const AddDealerLogin = async (req, res) => {
+//   const { emailOrMobile } = req.body;
+
+//   try {
+//     const isMobileNumber = /^\d+$/.test(emailOrMobile);
+//     const query = isMobileNumber
+//       ? { mobileNumber: emailOrMobile }
+//       : { email: emailOrMobile };
+
+//     const existingEntry = await dealeraccountModel.findOne(query);
+
+//     if (!existingEntry) {
+//       return res.status(404).json({ message: "Email or mobile number not found." });
+//     }
+
+//     // Generate OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000);
+//     otpStore[emailOrMobile] = otp; // Store OTP in memory
+
+//     console.log(`OTP for ${emailOrMobile}: ${otp}`);
+
+//     return res.status(200).json({
+//       message: `OTP sent to ${emailOrMobile}`,
+//       otp,
+//       clientId: existingEntry._id, // Use _id if clientId is missing
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: "Something went wrong. Please try again later." });
+//   }
+// };
 
 const AddDealerLogin = async (req, res) => {
   const { emailOrMobile } = req.body;
@@ -103,56 +182,98 @@ const AddDealerLogin = async (req, res) => {
       return res.status(404).json({ message: "Email or mobile number not found." });
     }
 
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    otpStore[emailOrMobile] = otp; // Store OTP in memory
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store OTP in memory
+    otpStore.set(emailOrMobile, otp);
+
+    if (!isMobileNumber) {
+      // Send OTP via email
+      const mailOptions = {
+        from: "your_email@gmail.com",
+        to: emailOrMobile,
+        subject: "Your OTP for Dealer Login",
+        text: `Your OTP for login is: ${otp}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+    }
 
     console.log(`OTP for ${emailOrMobile}: ${otp}`);
 
     return res.status(200).json({
-      message: `OTP sent to ${emailOrMobile}`,
-      otp,
-      clientId: existingEntry._id, // Use _id if clientId is missing
+      message: `OTP sent to ${isMobileNumber ? 'mobile' : 'email'}`,
+      otp, // send otp only for development/testing — remove in production
+      clientId: existingEntry._id,
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("Error in AddDealerLogin:", error);
     return res.status(500).json({ message: "Something went wrong. Please try again later." });
   }
 };
 
 
+// const AddLoginOtp = async(req,res)=>{
+
+//   try {
+//     const { emailOrMobile, otp } = req.body; // Expect email or mobile and OTP
+
+//     // Check if the provided email or mobile number exists in the database
+//     const existingEntry = await dealeraccountModel.findOne({
+//         $or: [{ email: emailOrMobile }, { mobileNumber: emailOrMobile }]
+//     });
+
+//     // If the entry does not exist, send an error response
+//     if (!existingEntry) {
+//         return res.status(404).json({ message: "Email or mobile number not found." });
+//     }
+
+//     // Check if the provided OTP matches the stored OTP
+//     if (otpStore[emailOrMobile] === otp) {
+//         delete otpStore[emailOrMobile]; // Remove the OTP after successful verification
+//         res.status(200).json({ message: "Login successful" });
+//     } else {
+//         res.status(400).json({ message: "Invalid OTP" });
+//     }
+// } catch (error) {
+//     res.status(500).json({ message: "Server error", error });
+// }
+
+// }
 
 
-const AddLoginOtp = async(req,res)=>{
-
+const AddLoginOtp = async (req, res) => {
   try {
-    const { emailOrMobile, otp } = req.body; // Expect email or mobile and OTP
+    const { emailOrMobile, otp } = req.body;
 
-    // Check if the provided email or mobile number exists in the database
     const existingEntry = await dealeraccountModel.findOne({
-        $or: [{ email: emailOrMobile }, { mobileNumber: emailOrMobile }]
+      $or: [{ email: emailOrMobile }, { mobileNumber: emailOrMobile }]
     });
 
-    // If the entry does not exist, send an error response
     if (!existingEntry) {
-        return res.status(404).json({ message: "Email or mobile number not found." });
+      return res.status(404).json({ message: "Email or mobile number not found." });
     }
 
-    // Check if the provided OTP matches the stored OTP
-    if (otpStore[emailOrMobile] === otp) {
-        delete otpStore[emailOrMobile]; // Remove the OTP after successful verification
-        res.status(200).json({ message: "Login successful" });
+    if (otpStore.get(emailOrMobile) === otp) {
+      otpStore.delete(emailOrMobile); // clear OTP on success
+      res.status(200).json({
+        message: "Login successful",
+        clientId: existingEntry._id
+      });
     } else {
-        res.status(400).json({ message: "Invalid OTP" });
+      res.status(400).json({ message: "Invalid OTP" });
     }
-} catch (error) {
+
+  } catch (error) {
+    console.error("Error in AddLoginOtp:", error);
     res.status(500).json({ message: "Server error", error });
-}
+  }
+};
 
 
-}
-
-// GST Deatils
+//-------------- GST Deatils---------------
 
 const GstgenerateOtp = async (req,res)=>{
 
@@ -196,7 +317,7 @@ const GstVerifyOtp = async (req,res)=>{
 }
 
 
-//gst post api 
+//---------------gst post api ---------------
 
 
 const addGstDetails = async (req, res) => {

@@ -1,37 +1,79 @@
 import TractorBrand from "../Models/TractorBrand.js";
-import multer from "multer";
-import path from "path";
+
 import { TractorTyre } from "../Models/adminModel.js";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
 
-const upload = multer({ storage: storage }).array('image', 10);
+import upload from "../utils/upload.js"
+
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads');
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   }
+// });
+
+// const upload = multer({ storage: storage }).array('image', 10);
+
+// Add Tractor Brand
+// const tractorAddFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) return res.status(500).json({ message: "Error uploading image" });
+
+//     const { name, slug, description } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     const imageNames = req.files.map(file => file.filename);
+
+//     const newTractorBrand = new TractorBrand({
+//       name,
+//       slug,
+//       description,
+//       image: imageNames
+//     });
+
+//     try {
+//       await newTractorBrand.save();
+//       res.status(201).json({ message: "Tractor brand added successfully" });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Error saving tractor brand" });
+//     }
+//   });
+// };
+
+
 
 // Add Tractor Brand
 const tractorAddFunction = async (req, res) => {
   upload(req, res, async function (err) {
-    if (err) return res.status(500).json({ message: "Error uploading image" });
+    if (err) {
+      return res.status(500).json({ message: "Error uploading image" });
+    }
 
     const { name, slug, description } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Check if images are uploaded
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    const imageNames = req.files.map(file => file.filename);
+    // Extract S3/DigitalOcean URLs
+    const imageUrls = imageFiles.map(file => file.location);
 
+    // Create new tractor brand
     const newTractorBrand = new TractorBrand({
       name,
       slug,
       description,
-      image: imageNames
+      image: imageUrls,
     });
 
     try {
@@ -43,6 +85,11 @@ const tractorAddFunction = async (req, res) => {
     }
   });
 };
+
+
+
+
+
 
 // Get all Tractor Brands
 const tractorGetFunction = async (req, res) => {
@@ -70,35 +117,90 @@ const tractorbrandGetFunction = async (req, res) => {
 };
 
 // Update Tractor Brand
+// const tractorUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) return res.status(500).json({ message: "Error uploading image" });
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     try {
+//       const existingBrand = await TractorBrand.findById(id);
+//       if (!existingBrand) return res.status(404).json({ error: 'Tractor brand not found' });
+
+//       let imageNames = existingBrand.image;
+//       if (req.files && req.files.length > 0) {
+//         imageNames = req.files.map(file => file.filename);
+//       }
+
+//       const updatedBrand = await TractorBrand.findByIdAndUpdate(
+//         id,
+//         { name, slug, description, image: imageNames },
+//         { new: true }
+//       );
+
+//       res.status(200).json({ message: 'Tractor brand updated successfully', updatedBrand });
+//     } catch (error) {
+//       console.error('Error updating tractor brand:', error);
+//       res.status(500).json({ error: 'Failed to update tractor brand' });
+//     }
+//   });
+// };
+
 const tractorUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
-    if (err) return res.status(500).json({ message: "Error uploading image" });
+    if (err) {
+      console.error('Multer error:', err);
+      return res.status(500).json({ message: "Error uploading image" });
+    }
 
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
-    try {
-      const existingBrand = await TractorBrand.findById(id);
-      if (!existingBrand) return res.status(404).json({ error: 'Tractor brand not found' });
+    let imageUrls = [];
 
-      let imageNames = existingBrand.image;
-      if (req.files && req.files.length > 0) {
-        imageNames = req.files.map(file => file.filename);
+    // Handle existing image URLs from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
       }
+    }
 
-      const updatedBrand = await TractorBrand.findByIdAndUpdate(
+    // Override with newly uploaded images if any
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
+    }
+
+    try {
+      const updatedTractorBrand = await TractorBrand.findByIdAndUpdate(
         id,
-        { name, slug, description, image: imageNames },
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
         { new: true }
       );
 
-      res.status(200).json({ message: 'Tractor brand updated successfully', updatedBrand });
+      if (!updatedTractorBrand) {
+        return res.status(404).json({ error: 'Tractor brand not found' });
+      }
+
+      res.status(200).json({
+        message: 'Tractor brand updated successfully',
+        updatedTractorBrand,
+      });
     } catch (error) {
       console.error('Error updating tractor brand:', error);
       res.status(500).json({ error: 'Failed to update tractor brand' });
     }
   });
 };
+
 
 // Delete Tractor Brand
 const tractorDeleteFunction = async (req, res) => {

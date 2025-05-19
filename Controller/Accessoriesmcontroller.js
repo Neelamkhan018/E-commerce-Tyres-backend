@@ -3,16 +3,57 @@ import AccessoriesModel from "../Models/AccessoriesModel.js";
 import multer from "multer";
 import path from "path";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); 
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
-});
 
-const upload = multer({ storage: storage }).array('image', 10);
+
+import upload from "../utils/upload.js"
+
+
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads'); 
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname)); 
+//   }
+// });
+
+// const upload = multer({ storage: storage }).array('image', 10);
+
+// Add Accessory
+// const accessoriesAddFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       console.error('Multer error:', err);
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { name, slug, description, brandid } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     const imageNames = req.files.map(file => file.filename);
+
+//     const newAccessory = new AccessoriesModel({
+//       name,
+//       slug,
+//       description,
+//       image: imageNames,
+//       brand_id: brandid
+//     });
+
+//     try {
+//       await newAccessory.save();
+//       res.status(201).json({ message: "Accessory added successfully" });
+//     } catch (err) {
+//       console.error('Error saving accessory:', err);
+//       res.status(500).json({ message: "Error saving accessory" });
+//     }
+//   });
+// }
+
 
 // Add Accessory
 const accessoriesAddFunction = async (req, res) => {
@@ -24,18 +65,23 @@ const accessoriesAddFunction = async (req, res) => {
 
     const { name, slug, description, brandid } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Get uploaded images from 'image' field
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    const imageNames = req.files.map(file => file.filename);
+    // Extract hosted image URLs
+    const imageUrls = imageFiles.map(file => file.location);
 
+    // Create new accessory
     const newAccessory = new AccessoriesModel({
       name,
       slug,
       description,
-      image: imageNames,
-      brand_id: brandid
+      image: imageUrls,
+      brand_id: brandid,
     });
 
     try {
@@ -46,7 +92,13 @@ const accessoriesAddFunction = async (req, res) => {
       res.status(500).json({ message: "Error saving accessory" });
     }
   });
-}
+};
+
+
+
+
+
+
 
 // Get Accessories by brand ID
 const accessoriesGetFunction = async (req, res) => {
@@ -76,6 +128,44 @@ const accessoriesGetFunction = async (req, res) => {
 };
 
 // Update Accessory
+// const accessoriesUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       console.error('Multer error:', err);
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     let updatedFields = { name, slug, description };
+
+//     if (req.files && req.files.length > 0) {
+//       const imageNames = req.files.map(file => file.filename);
+//       updatedFields.image = imageNames;
+//     }
+
+//     try {
+//       const updatedAccessory = await AccessoriesModel.findByIdAndUpdate(
+//         id,
+//         updatedFields,
+//         { new: true }
+//       );
+
+//       if (!updatedAccessory) {
+//         return res.status(404).json({ error: 'Accessory not found' });
+//       }
+
+//       res.status(200).json({ message: 'Accessory updated successfully', updatedAccessory });
+//     } catch (error) {
+//       console.error('Error updating accessory:', error);
+//       res.status(500).json({ error: 'Failed to update accessory' });
+//     }
+//   });
+// }
+
+
+// Update Accessory
 const accessoriesUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {
@@ -86,17 +176,32 @@ const accessoriesUpdateFunction = async (req, res) => {
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
-    let updatedFields = { name, slug, description };
+    let imageUrls = [];
 
-    if (req.files && req.files.length > 0) {
-      const imageNames = req.files.map(file => file.filename);
-      updatedFields.image = imageNames;
+    // Handle existing image URLs from form input (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
+      }
+    }
+
+    // Override with newly uploaded images if any
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
     }
 
     try {
       const updatedAccessory = await AccessoriesModel.findByIdAndUpdate(
         id,
-        updatedFields,
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
         { new: true }
       );
 
@@ -104,13 +209,23 @@ const accessoriesUpdateFunction = async (req, res) => {
         return res.status(404).json({ error: 'Accessory not found' });
       }
 
-      res.status(200).json({ message: 'Accessory updated successfully', updatedAccessory });
+      res.status(200).json({
+        message: 'Accessory updated successfully',
+        updatedAccessory,
+      });
     } catch (error) {
       console.error('Error updating accessory:', error);
       res.status(500).json({ error: 'Failed to update accessory' });
     }
   });
-}
+};
+
+
+
+
+
+
+
 
 // Delete Accessory
 const accessoriesDeleteFunction = async (req, res) => {

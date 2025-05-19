@@ -3,35 +3,79 @@ import multer from "multer";
 import path from "path";
 import { AlloyWheel } from "../Models/adminModel.js";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
 
-const upload = multer({ storage: storage }).array('image', 10);
+
+import upload from "../utils/upload.js"
+
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads');
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   }
+// });
+
+// const upload = multer({ storage: storage }).array('image', 10);
+
+// Add Alloy Wheel Brand
+// const alloyWheelAddFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) return res.status(500).json({ message: "Error uploading image" });
+
+//     const { name, slug, description } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     const imageNames = req.files.map(file => file.filename);
+
+//     const newAlloyWheelBrand = new AlloyWheelBrand({
+//       name,
+//       slug,
+//       description,
+//       image: imageNames
+//     });
+
+//     try {
+//       await newAlloyWheelBrand.save();
+//       res.status(201).json({ message: "Alloy wheel brand added successfully" });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Error saving alloy wheel brand" });
+//     }
+//   });
+// };
+
+
 
 // Add Alloy Wheel Brand
 const alloyWheelAddFunction = async (req, res) => {
   upload(req, res, async function (err) {
-    if (err) return res.status(500).json({ message: "Error uploading image" });
+    if (err) {
+      return res.status(500).json({ message: "Error uploading image" });
+    }
 
     const { name, slug, description } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Check if images are uploaded
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    const imageNames = req.files.map(file => file.filename);
+    // Extract S3/DigitalOcean URLs
+    const imageUrls = imageFiles.map(file => file.location);
 
+    // Create new alloy wheel brand
     const newAlloyWheelBrand = new AlloyWheelBrand({
       name,
       slug,
       description,
-      image: imageNames
+      image: imageUrls,
     });
 
     try {
@@ -43,6 +87,10 @@ const alloyWheelAddFunction = async (req, res) => {
     }
   });
 };
+
+
+
+
 
 // Get all Alloy Wheel Brands
 const alloyWheelGetFunction = async (req, res) => {
@@ -70,35 +118,100 @@ const alloyWheelBrandGetFunction = async (req, res) => {
 };
 
 // Update Alloy Wheel Brand
+// const alloyWheelUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) return res.status(500).json({ message: "Error uploading image" });
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     try {
+//       const existingBrand = await AlloyWheelBrand.findById(id);
+//       if (!existingBrand) return res.status(404).json({ error: 'Alloy wheel brand not found' });
+
+//       let imageNames = existingBrand.image;
+//       if (req.files && req.files.length > 0) {
+//         imageNames = req.files.map(file => file.filename);
+//       }
+
+//       const updatedBrand = await AlloyWheelBrand.findByIdAndUpdate(
+//         id,
+//         { name, slug, description, image: imageNames },
+//         { new: true }
+//       );
+
+//       res.status(200).json({ message: 'Alloy wheel brand updated successfully', updatedBrand });
+//     } catch (error) {
+//       console.error('Error updating alloy wheel brand:', error);
+//       res.status(500).json({ error: 'Failed to update alloy wheel brand' });
+//     }
+//   });
+// };
+
+
+
+
+// Update Alloy Wheel Brand
 const alloyWheelUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
-    if (err) return res.status(500).json({ message: "Error uploading image" });
+    if (err) {
+      console.error('Multer error:', err);
+      return res.status(500).json({ message: "Error uploading image" });
+    }
 
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
-    try {
-      const existingBrand = await AlloyWheelBrand.findById(id);
-      if (!existingBrand) return res.status(404).json({ error: 'Alloy wheel brand not found' });
+    let imageUrls = [];
 
-      let imageNames = existingBrand.image;
-      if (req.files && req.files.length > 0) {
-        imageNames = req.files.map(file => file.filename);
+    // Handle existing image URLs from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
       }
+    }
 
-      const updatedBrand = await AlloyWheelBrand.findByIdAndUpdate(
+    // Override with newly uploaded images if any
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
+    }
+
+    try {
+      const updatedAlloyWheelBrand = await AlloyWheelBrand.findByIdAndUpdate(
         id,
-        { name, slug, description, image: imageNames },
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
         { new: true }
       );
 
-      res.status(200).json({ message: 'Alloy wheel brand updated successfully', updatedBrand });
+      if (!updatedAlloyWheelBrand) {
+        return res.status(404).json({ error: 'Alloy wheel brand not found' });
+      }
+
+      res.status(200).json({
+        message: 'Alloy wheel brand updated successfully',
+        updatedAlloyWheelBrand,
+      });
     } catch (error) {
       console.error('Error updating alloy wheel brand:', error);
       res.status(500).json({ error: 'Failed to update alloy wheel brand' });
     }
   });
 };
+
+
+
+
+
+
+
 
 // Delete Alloy Wheel Brand
 const alloyWheelDeleteFunction = async (req, res) => {

@@ -3,36 +3,82 @@ import multer from "multer";
 import path from "path";
 import { Accessories } from "../Models/adminModel.js";
 
-// Multer setup
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
 
-const upload = multer({ storage: storage }).array('image', 10);
+
+
+import upload from "../utils/upload.js"
+
+
+
+
+
+// // Multer setup
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads');
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   }
+// });
+
+// const upload = multer({ storage: storage }).array('image', 10);
+
+// // Add Accessories Brand
+// const accessoriesBrandAddFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) return res.status(500).json({ message: "Error uploading image" });
+
+//     const { name, slug, description } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     const imageNames = req.files.map(file => file.filename);
+
+//     const newAccessoriesBrand = new AccessoriesBrand({
+//       name,
+//       slug,
+//       description,
+//       image: imageNames
+//     });
+
+//     try {
+//       await newAccessoriesBrand.save();
+//       res.status(201).json({ message: "Accessories brand added successfully" });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Error saving accessories brand" });
+//     }
+//   });
+// };
 
 // Add Accessories Brand
 const accessoriesBrandAddFunction = async (req, res) => {
   upload(req, res, async function (err) {
-    if (err) return res.status(500).json({ message: "Error uploading image" });
+    if (err) {
+      return res.status(500).json({ message: "Error uploading image" });
+    }
 
     const { name, slug, description } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Get uploaded images from 'image' field
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    const imageNames = req.files.map(file => file.filename);
+    // Extract image URLs from S3/DigitalOcean
+    const imageUrls = imageFiles.map(file => file.location);
 
+    // Create new accessories brand
     const newAccessoriesBrand = new AccessoriesBrand({
       name,
       slug,
       description,
-      image: imageNames
+      image: imageUrls,
     });
 
     try {
@@ -44,6 +90,7 @@ const accessoriesBrandAddFunction = async (req, res) => {
     }
   });
 };
+
 
 // Get all Accessories Brands
 const accessoriesBrandGetFunction = async (req, res) => {
@@ -70,36 +117,97 @@ const accessoriesBrandGetById = async (req, res) => {
   }
 };
 
+// // Update Accessories Brand
+// const accessoriesBrandUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) return res.status(500).json({ message: "Error uploading image" });
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     try {
+//       const existingBrand = await AccessoriesBrand.findById(id);
+//       if (!existingBrand) return res.status(404).json({ error: 'Accessories brand not found' });
+
+//       let imageNames = existingBrand.image;
+//       if (req.files && req.files.length > 0) {
+//         imageNames = req.files.map(file => file.filename);
+//       }
+
+//       const updatedBrand = await AccessoriesBrand.findByIdAndUpdate(
+//         id,
+//         { name, slug, description, image: imageNames },
+//         { new: true }
+//       );
+
+//       res.status(200).json({ message: 'Accessories brand updated successfully', updatedBrand });
+//     } catch (error) {
+//       console.error('Error updating accessories brand:', error);
+//       res.status(500).json({ error: 'Failed to update accessories brand' });
+//     }
+//   });
+// };
+
+
 // Update Accessories Brand
 const accessoriesBrandUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
-    if (err) return res.status(500).json({ message: "Error uploading image" });
+    if (err) {
+      console.error('Multer error:', err);
+      return res.status(500).json({ message: "Error uploading image" });
+    }
 
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
-    try {
-      const existingBrand = await AccessoriesBrand.findById(id);
-      if (!existingBrand) return res.status(404).json({ error: 'Accessories brand not found' });
+    let imageUrls = [];
 
-      let imageNames = existingBrand.image;
-      if (req.files && req.files.length > 0) {
-        imageNames = req.files.map(file => file.filename);
+    // Handle existing image URLs from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
       }
+    }
 
-      const updatedBrand = await AccessoriesBrand.findByIdAndUpdate(
+    // Override with newly uploaded images if any
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
+    }
+
+    try {
+      const updatedAccessoriesBrand = await AccessoriesBrand.findByIdAndUpdate(
         id,
-        { name, slug, description, image: imageNames },
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
         { new: true }
       );
 
-      res.status(200).json({ message: 'Accessories brand updated successfully', updatedBrand });
+      if (!updatedAccessoriesBrand) {
+        return res.status(404).json({ error: 'Accessories brand not found' });
+      }
+
+      res.status(200).json({
+        message: 'Accessories brand updated successfully',
+        updatedAccessoriesBrand,
+      });
     } catch (error) {
       console.error('Error updating accessories brand:', error);
       res.status(500).json({ error: 'Failed to update accessories brand' });
     }
   });
 };
+
+
+
+
+
 
 // Delete Accessories Brand
 const accessoriesBrandDeleteFunction = async (req, res) => {

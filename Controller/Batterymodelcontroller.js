@@ -3,18 +3,65 @@ import BatteryModel from "../Models/BatteryModel.js"; // Import the BatteryModel
 import multer from "multer";
 import path from "path";
 
-const ObjectId = mongoose.Types.ObjectId;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); 
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
-});
 
-const upload = multer({ storage: storage }).array('image', 10);
+import upload from "../utils/upload.js"
+
+
+
+// const ObjectId = mongoose.Types.ObjectId;
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads'); 
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname)); 
+//   }
+// });
+
+// const upload = multer({ storage: storage }).array('image', 10);
+
+// Post API for BatteryModel
+// const batteryModelFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       console.error('Multer error:', err);
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     console.log('Form data:', req.body);
+//     console.log('Uploaded files:', req.files);
+
+//     const { name, slug, description, brandid } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     const imageNames = req.files.map(file => file.filename);
+
+//     // Create new battery model
+//     const newBatteryModel = new BatteryModel({
+//       name,
+//       slug,
+//       description,
+//       image: imageNames,
+//       brand_id: brandid
+//     });
+
+//     try {
+//       await newBatteryModel.save();
+//       res.status(201).json({ message: "Battery model added successfully" });
+//     } catch (err) {
+//       console.error('Error saving battery model:', err);
+//       res.status(500).json({ message: "Error saving battery model" });
+//     }
+//   });
+// }
+
+
+
 
 // Post API for BatteryModel
 const batteryModelFunction = async (req, res) => {
@@ -24,24 +71,25 @@ const batteryModelFunction = async (req, res) => {
       return res.status(500).json({ message: "Error uploading image" });
     }
 
-    console.log('Form data:', req.body);
-    console.log('Uploaded files:', req.files);
-
     const { name, slug, description, brandid } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Get uploaded images from 'image' field
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    const imageNames = req.files.map(file => file.filename);
+    // Extract hosted image URLs
+    const imageUrls = imageFiles.map(file => file.location);
 
     // Create new battery model
     const newBatteryModel = new BatteryModel({
       name,
       slug,
       description,
-      image: imageNames,
-      brand_id: brandid
+      image: imageUrls,
+      brand_id: brandid,
     });
 
     try {
@@ -52,7 +100,10 @@ const batteryModelFunction = async (req, res) => {
       res.status(500).json({ message: "Error saving battery model" });
     }
   });
-}
+};
+
+
+
 
 // Get API for BatteryModel
 const batteryModelGetFunction = async (req, res) => {
@@ -81,7 +132,48 @@ const batteryModelGetFunction = async (req, res) => {
   }
 };
 
-// Update API for BatteryModel
+// // Update API for BatteryModel
+// const batteryModelUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       console.error('Multer error:', err);
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     let updatedFields = { name, slug, description };
+
+//     if (req.files && req.files.length > 0) {
+//       const imageNames = req.files.map(file => file.filename);
+//       updatedFields.image = imageNames;
+//     }
+
+//     try {
+//       const updatedBatteryModel = await BatteryModel.findByIdAndUpdate(
+//         id,
+//         updatedFields,
+//         { new: true }
+//       );
+
+//       if (!updatedBatteryModel) {
+//         return res.status(404).json({ error: 'Battery model not found' });
+//       }
+
+//       res.status(200).json({ message: 'Battery model updated successfully', updatedBatteryModel });
+//     } catch (error) {
+//       console.error('Error updating battery model:', error);
+//       res.status(500).json({ error: 'Failed to update battery model' });
+//     }
+//   });
+// }
+
+
+
+
+
+// Update Battery Model
 const batteryModelUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {
@@ -92,17 +184,32 @@ const batteryModelUpdateFunction = async (req, res) => {
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
-    let updatedFields = { name, slug, description };
+    let imageUrls = [];
 
-    if (req.files && req.files.length > 0) {
-      const imageNames = req.files.map(file => file.filename);
-      updatedFields.image = imageNames;
+    // Handle existing image URLs from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
+      }
+    }
+
+    // Override with newly uploaded images if any
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
     }
 
     try {
       const updatedBatteryModel = await BatteryModel.findByIdAndUpdate(
         id,
-        updatedFields,
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
         { new: true }
       );
 
@@ -110,13 +217,22 @@ const batteryModelUpdateFunction = async (req, res) => {
         return res.status(404).json({ error: 'Battery model not found' });
       }
 
-      res.status(200).json({ message: 'Battery model updated successfully', updatedBatteryModel });
+      res.status(200).json({
+        message: 'Battery model updated successfully',
+        updatedBatteryModel,
+      });
     } catch (error) {
       console.error('Error updating battery model:', error);
       res.status(500).json({ error: 'Failed to update battery model' });
     }
   });
-}
+};
+
+
+
+
+
+
 
 // Delete API for BatteryModel
 const batteryModelDeleteFunction = async (req, res) => {

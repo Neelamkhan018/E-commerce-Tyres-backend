@@ -4,53 +4,93 @@ import multer from "multer";
 import path from "path"
 import { BikeTyre, CarTyre } from "../Models/adminModel.js";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); 
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
-});
+
+import upload from "../utils/upload.js"
 
 
 
-const upload = multer({ storage: storage }).array('image', 10);
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads'); 
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname)); 
+//   }
+// });
 
 
-// post api
-const bikebrandAddFunction = async(req,res)=>{
-    upload(req, res, async function (err) {
-        if (err) {
-          return res.status(500).json({ message: "Error uploading image" });
-        }
+
+// const upload = multer({ storage: storage }).array('image', 10);
+
+
+// // post api
+// const bikebrandAddFunction = async(req,res)=>{
+//     upload(req, res, async function (err) {
+//         if (err) {
+//           return res.status(500).json({ message: "Error uploading image" });
+//         }
     
-        const { name, slug, description } = req.body;
+//         const { name, slug, description } = req.body;
     
-        if (!req.files || req.files.length === 0) {
-          return res.status(400).json({ message: "No images uploaded" });
-        }
+//         if (!req.files || req.files.length === 0) {
+//           return res.status(400).json({ message: "No images uploaded" });
+//         }
     
         
-        const imageNames = req.files.map(file => file.filename);
+//         const imageNames = req.files.map(file => file.filename);
     
-        const newbikeBrand = new BikeBrand({
-          name,
-          slug,
-          description,
-          image: imageNames 
-        });
+//         const newbikeBrand = new BikeBrand({
+//           name,
+//           slug,
+//           description,
+//           image: imageNames 
+//         });
     
-        try {
+//         try {
          
-          await newbikeBrand.save();
-          res.status(201).json({ message: "Bike brand added successfully" });
-        } catch (err) {
-          console.error(err);
-          res.status(500).json({ message: "Error saving Bike brand" });
-        }
-      });
-}
+//           await newbikeBrand.save();
+//           res.status(201).json({ message: "Bike brand added successfully" });
+//         } catch (err) {
+//           console.error(err);
+//           res.status(500).json({ message: "Error saving Bike brand" });
+//         }
+//       });
+// }
+
+const bikebrandAddFunction = async (req, res) => {
+  upload(req, res, async function (err) {
+    if (err) {
+      return res.status(500).json({ message: "Error uploading image" });
+    }
+
+    const { name, slug, description } = req.body;
+
+    // Check if files exist
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length === 0) {
+      return res.status(400).json({ message: "No images uploaded" });
+    }
+
+    // Extract image URLs from uploaded files (S3/DigitalOcean style)
+    const imageUrls = imageFiles.map(file => file.location);
+
+    const newBikeBrand = new BikeBrand({
+      name,
+      slug,
+      description,
+      image: imageUrls,
+    });
+
+    try {
+      await newBikeBrand.save();
+      res.status(201).json({ message: "Bike brand added successfully", newBikeBrand });
+    } catch (err) {
+      console.error("Error saving bike brand:", err);
+      res.status(500).json({ message: "Error saving Bike brand" });
+    }
+  });
+};
+
 
 
 // Get api
@@ -66,9 +106,52 @@ const bikebrandGetFunction = async (req,res)=>{
 
 }
 
-// Update Api
-const bikebrandUpdateFunction = async(req,res)=>{
+
+
+
+
+// // Update Api
+// const bikebrandUpdateFunction = async(req,res)=>{
   
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     try {
+//       // Fetch the existing bike brand data
+//       const bikeBrand = await BikeBrand.findById(id);
+
+//       if (!bikeBrand) {
+//         return res.status(404).json({ message: 'Bike brand not found' });
+//       }
+
+//       // Update the fields if they are provided
+//       bikeBrand.name = name || bikeBrand.name;
+//       bikeBrand.slug = slug || bikeBrand.slug;
+//       bikeBrand.description = description || bikeBrand.description;
+
+//       // If new images are uploaded, update the images field
+//       if (req.files && req.files.length > 0) {
+//         bikeBrand.image = req.files.map(file => file.filename);
+//       }
+
+//       // Save the updated bike brand
+//       const updatedBikeBrand = await bikeBrand.save();
+
+//       res.status(200).json(updatedBikeBrand);
+//     } catch (error) {
+//       console.error('Error updating bike brand:', error);
+//       res.status(500).json({ message: 'Internal server error' });
+//     }
+//   });
+// }
+
+
+const bikebrandUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {
       return res.status(500).json({ message: "Error uploading image" });
@@ -77,34 +160,54 @@ const bikebrandUpdateFunction = async(req,res)=>{
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
+    let imageUrls = [];
+
+    // Handle old image data from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
+      }
+    }
+
+    // Override with new image URLs if uploaded
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
+    }
+
     try {
-      // Fetch the existing bike brand data
-      const bikeBrand = await BikeBrand.findById(id);
+      // Update the bike brand
+      const updatedBikeBrand = await BikeBrand.findByIdAndUpdate(
+        id,
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
+        { new: true }
+      );
 
-      if (!bikeBrand) {
-        return res.status(404).json({ message: 'Bike brand not found' });
+      if (!updatedBikeBrand) {
+        return res.status(404).json({ message: "Bike brand not found" });
       }
 
-      // Update the fields if they are provided
-      bikeBrand.name = name || bikeBrand.name;
-      bikeBrand.slug = slug || bikeBrand.slug;
-      bikeBrand.description = description || bikeBrand.description;
-
-      // If new images are uploaded, update the images field
-      if (req.files && req.files.length > 0) {
-        bikeBrand.image = req.files.map(file => file.filename);
-      }
-
-      // Save the updated bike brand
-      const updatedBikeBrand = await bikeBrand.save();
-
-      res.status(200).json(updatedBikeBrand);
+      res.status(200).json({
+        message: "Bike brand updated successfully",
+        updatedBikeBrand,
+      });
     } catch (error) {
-      console.error('Error updating bike brand:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      console.error("Error updating bike brand:", error);
+      res.status(500).json({ message: "Failed to update bike brand" });
     }
   });
-}
+};
+
+
+
+
 
 // Delete Api 
 const bikebrandDeleteFunction = async (req,res)=>{

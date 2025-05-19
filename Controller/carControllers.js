@@ -5,53 +5,94 @@ import path from "path"
 import {  CarTyre } from "../Models/adminModel.js";
 
 
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); 
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
-}); 
+import upload from "../utils/upload.js"
 
 
-const upload = multer({ storage: storage }).array('image', 10);
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads'); 
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname)); 
+//   }
+// }); 
 
 
-const carAddFunction  = async (req,res)=>{
-    upload(req, res, async function (err) {
-        if (err) {
-          return res.status(500).json({ message: "Error uploading image" });
-        }
+// const upload = multer({ storage: storage }).array('image', 10);
+
+
+// const carAddFunction  = async (req,res)=>{
+//     upload(req, res, async function (err) {
+//         if (err) {
+//           return res.status(500).json({ message: "Error uploading image" });
+//         }
     
-        const { name, slug, description, } = req.body;
+//         const { name, slug, description, } = req.body;
     
-        if (!req.files || req.files.length === 0) {
-          return res.status(400).json({ message: "No images uploaded" });
-        }
+//         if (!req.files || req.files.length === 0) {
+//           return res.status(400).json({ message: "No images uploaded" });
+//         }
     
         
-        const imageNames = req.files.map(file => file.filename);
+//         const imageNames = req.files.map(file => file.filename);
     
-        // Create new tyre brand
-        const newTyreBrand = new CarBrand({
-          name,
-          slug,
-          description,
-          image: imageNames 
-        });
+//         // Create new tyre brand
+//         const newTyreBrand = new CarBrand({
+//           name,
+//           slug,
+//           description,
+//           image: imageNames 
+//         });
     
-        try {
+//         try {
          
-          await newTyreBrand.save();
-          res.status(201).json({ message: "Tyre brand added successfully" });
-        } catch (err) {
-          console.error(err);
-          res.status(500).json({ message: "Error saving tyre brand" });
-        }
-      });
-}
+//           await newTyreBrand.save();
+//           res.status(201).json({ message: "Tyre brand added successfully" });
+//         } catch (err) {
+//           console.error(err);
+//           res.status(500).json({ message: "Error saving tyre brand" });
+//         }
+//       });
+// }
+
+
+const carAddFunction = async (req, res) => {
+  upload(req, res, async function (err) {
+    if (err) {
+      return res.status(500).json({ message: "Error uploading image" });
+    }
+
+    const { name, slug, description } = req.body;
+
+    // Check if images are uploaded
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
+      return res.status(400).json({ message: "No images uploaded" });
+    }
+
+    // Extract DigitalOcean URLs
+    const imageUrls = imageFiles.map(file => file.location);
+
+    // Create new car brand
+    const newCarBrand = new CarBrand({
+      name,
+      slug,
+      description,
+      image: imageUrls,
+    });
+
+    try {
+      await newCarBrand.save();
+      res.status(201).json({ message: "Car brand added successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error saving car brand" });
+    }
+  });
+};
+
 
 
 
@@ -70,46 +111,101 @@ const carGetFunction = async(req,res)=>{
 
 // update api
 
-const carUpdateFunction = async (req,res)=>{
+// const carUpdateFunction = async (req,res)=>{
    
 
-    upload(req, res, async function (err) {
-      if (err) {
-        return res.status(500).json({ message: "Error uploading image" });
-      }
+//     upload(req, res, async function (err) {
+//       if (err) {
+//         return res.status(500).json({ message: "Error uploading image" });
+//       }
   
-      const { id } = req.params;
-      const { name, slug, description } = req.body;
+//       const { id } = req.params;
+//       const { name, slug, description } = req.body;
   
-      try {
-        // Find the existing brand
-        const existingBrand = await CarBrand.findById(id);
+//       try {
+//         // Find the existing brand
+//         const existingBrand = await CarBrand.findById(id);
   
-        if (!existingBrand) {
-          return res.status(404).json({ error: 'Car brand not found' });
-        }
+//         if (!existingBrand) {
+//           return res.status(404).json({ error: 'Car brand not found' });
+//         }
   
-        // Update the image field only if new files were uploaded
-        let imageNames = existingBrand.image;
-        if (req.files && req.files.length > 0) {
-          imageNames = req.files.map(file => file.filename);
-        }
+//         // Update the image field only if new files were uploaded
+//         let imageNames = existingBrand.image;
+//         if (req.files && req.files.length > 0) {
+//           imageNames = req.files.map(file => file.filename);
+//         }
   
-        // Update the brand
-        const updatedBrand = await CarBrand.findByIdAndUpdate(
-          id,
-          { name, slug, description, image: imageNames },
-          { new: true } // Return the updated document
-        );
+//         // Update the brand
+//         const updatedBrand = await CarBrand.findByIdAndUpdate(
+//           id,
+//           { name, slug, description, image: imageNames },
+//           { new: true } // Return the updated document
+//         );
   
-        res.status(200).json({ message: 'Car brand updated successfully', updatedBrand });
-      } catch (error) {
-        console.error('Error updating car brand:', error);
-        res.status(500).json({ error: 'Failed to update car brand' });
-      }
-    });
+//         res.status(200).json({ message: 'Car brand updated successfully', updatedBrand });
+//       } catch (error) {
+//         console.error('Error updating car brand:', error);
+//         res.status(500).json({ error: 'Failed to update car brand' });
+//       }
+//     });
 
-}
+// }
+
+
+
+const carUpdateFunction = async (req, res) => {
+  upload(req, res, async function (err) {
+    if (err) {
+      return res.status(500).json({ message: "Error uploading image" });
+    }
+
+    const { id } = req.params;
+    const { name, slug, description } = req.body;
+
+    let imageUrls = [];
+
+    // Handle existing images from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
+      }
+    }
+
+    // If new images are uploaded, override with them
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
+    }
+
+    try {
+      const updatedBrand = await CarBrand.findByIdAndUpdate(
+        id,
+        { name, slug, description, image: imageUrls },
+        { new: true }
+      );
+
+      if (!updatedBrand) {
+        return res.status(404).json({ error: 'Car brand not found' });
+      }
+
+      res.status(200).json({
+        message: 'Car brand updated successfully',
+        updatedBrand,
+      });
+    } catch (error) {
+      console.error('Error updating car brand:', error);
+      res.status(500).json({ error: 'Failed to update car brand' });
+    }
+  });
+};
+
+
+
+
+
 
 const carDeleteFunction = async (req,res)=>{
     const { id } = req.params;

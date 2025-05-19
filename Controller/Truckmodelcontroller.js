@@ -1,59 +1,100 @@
 import mongoose from "mongoose";
 import TruckModel from "../Models/TruckModel.js";
 
-import multer from "multer";
-import path from "path";
 
-const ObjectId = mongoose.Types.ObjectId;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); 
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
-});
+import upload from "../utils/upload.js"
 
-const upload = multer({ storage: storage }).array('image', 10);
+
+// const ObjectId = mongoose.Types.ObjectId;
+
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads'); 
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname)); 
+//   }
+// });
+
+// const upload = multer({ storage: storage }).array('image', 10);
 
 // Post API
+// const truckModelFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       console.error('Multer error:', err); // Log multer error
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     console.log('Form data:', req.body);
+//     console.log('Uploaded files:', req.files); // Log uploaded files
+
+//     const { name, slug, description, brandid } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     const imageNames = req.files.map(file => file.filename);
+
+//     // Create new truck model
+//     const newTruckModel = new TruckModel({
+//       name,
+//       slug,
+//       description,
+//       image: imageNames,
+//       brand_id: brandid
+//     });
+
+//     try {
+//       await newTruckModel.save();
+//       res.status(201).json({ message: "Truck model added successfully" });
+//     } catch (err) {
+//       console.error('Error saving truck model:', err); // Log saving error
+//       res.status(500).json({ message: "Error saving truck model" });
+//     }
+//   });
+// }
+
 const truckModelFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {
-      console.error('Multer error:', err); // Log multer error
+      console.error('Multer error:', err);
       return res.status(500).json({ message: "Error uploading image" });
     }
 
-    console.log('Form data:', req.body);
-    console.log('Uploaded files:', req.files); // Log uploaded files
-
     const { name, slug, description, brandid } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Get uploaded images from 'image' field
+    const imageFiles = req.files['image'] || [];
+
+    if (imageFiles.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    const imageNames = req.files.map(file => file.filename);
+    // Extract hosted image URLs
+    const imageUrls = imageFiles.map(file => file.location);
 
     // Create new truck model
     const newTruckModel = new TruckModel({
       name,
       slug,
       description,
-      image: imageNames,
-      brand_id: brandid
+      image: imageUrls,
+      brand_id: brandid,
     });
 
     try {
       await newTruckModel.save();
       res.status(201).json({ message: "Truck model added successfully" });
     } catch (err) {
-      console.error('Error saving truck model:', err); // Log saving error
+      console.error('Error saving truck model:', err);
       res.status(500).json({ message: "Error saving truck model" });
     }
   });
-}
+};
+
 
 // // Get API
 // const truckModelGetFunction = async (req, res) => {
@@ -106,41 +147,100 @@ const truckModelGetFunction = async (req, res) => {
 
 
 // Update API
+// const truckModelUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       console.error('Multer error:', err); // Log multer error
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     let updatedFields = { name, slug, description };
+
+//     if (req.files && req.files.length > 0) {
+//       const imageNames = req.files.map(file => file.filename);
+//       updatedFields.image = imageNames;
+//     }
+
+//     try {
+//       const updatedTruckModel = await TruckModel.findByIdAndUpdate(
+//         id,
+//         updatedFields,
+//         { new: true } // Return the updated document
+//       );
+
+//       if (!updatedTruckModel) {
+//         return res.status(404).json({ error: 'Truck model not found' });
+//       }
+
+//       res.status(200).json({ message: 'Truck model updated successfully', updatedTruckModel });
+//     } catch (error) {
+//       console.error('Error updating truck model:', error);
+//       res.status(500).json({ error: 'Failed to update truck model' });
+//     }
+//   });
+// }
+
+
 const truckModelUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {
-      console.error('Multer error:', err); // Log multer error
+      console.error('Multer error:', err);
       return res.status(500).json({ message: "Error uploading image" });
     }
 
     const { id } = req.params;
     const { name, slug, description } = req.body;
 
-    let updatedFields = { name, slug, description };
+    let imageUrls = [];
 
-    if (req.files && req.files.length > 0) {
-      const imageNames = req.files.map(file => file.filename);
-      updatedFields.image = imageNames;
+    // Handle existing image URLs from form (string or array)
+    if (req.body.image) {
+      if (typeof req.body.image === 'string') {
+        imageUrls = [req.body.image];
+      } else if (Array.isArray(req.body.image)) {
+        imageUrls = req.body.image;
+      }
+    }
+
+    // Override with newly uploaded images if any
+    const imageFiles = req.files['image'] || [];
+    if (imageFiles.length > 0) {
+      imageUrls = imageFiles.map(file => file.location);
     }
 
     try {
       const updatedTruckModel = await TruckModel.findByIdAndUpdate(
         id,
-        updatedFields,
-        { new: true } // Return the updated document
+        {
+          name,
+          slug,
+          description,
+          image: imageUrls,
+        },
+        { new: true }
       );
 
       if (!updatedTruckModel) {
         return res.status(404).json({ error: 'Truck model not found' });
       }
 
-      res.status(200).json({ message: 'Truck model updated successfully', updatedTruckModel });
+      res.status(200).json({
+        message: 'Truck model updated successfully',
+        updatedTruckModel,
+      });
     } catch (error) {
       console.error('Error updating truck model:', error);
       res.status(500).json({ error: 'Failed to update truck model' });
     }
   });
-}
+};
+
+
+
+
 
 // Delete API
 const truckModelDeleteFunction = async (req, res) => {

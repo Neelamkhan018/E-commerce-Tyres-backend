@@ -32,43 +32,120 @@ import upload from "../utils/upload.js"
 
 
 
-const tyreFunction = async (req, res) => {
+// const tyreFunction = async (req, res) => {
 
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { name, slug, description } = req.body;
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     // Get image filenames
+//     // const imageNames = req.files.map(file => file.filename);
+//     // Collect URLs of uploaded images
+//   const imageFiles = req.files['image'] || [];
+// const imageUrls = imageFiles.map(file => file.location); // ✅ Correct way for fields()
+
+//     // Create new tyre brand
+//     const newTyreBrand = new TyreBrand({
+//       name,
+//       slug,
+//       description,
+//       image: imageUrls // Save uploaded images
+//     });
+
+//     try {
+//       // Save tyre brand to database
+//       await newTyreBrand.save();
+//       res.status(201).json({ message: "Tyre brand added successfully" });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Error saving tyre brand" });
+//     }
+//   });
+//   }
+
+
+// const tyreFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
+
+//     const { name, slug, description, category } = req.body; // ✅ Include category
+
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({ message: "No images uploaded" });
+//     }
+
+//     // Get uploaded image URLs
+//     const imageFiles = req.files['image'] || [];
+//     const imageUrls = imageFiles.map(file => file.location);
+
+//     // Create new tyre brand
+//     const newTyreBrand = new TyreBrand({
+//       name,
+//       slug,
+//       description,
+//       category,         // ✅ Add category here
+//       image: imageUrls, // Save uploaded images
+//     });
+
+//     try {
+//       await newTyreBrand.save();
+//       res.status(201).json({ message: "Tyre brand added successfully" });
+//     } catch (err) {
+//       console.error(err);
+//       res.status(500).json({ message: "Error saving tyre brand" });
+//     }
+//   });
+// };
+
+
+const tyreFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {
       return res.status(500).json({ message: "Error uploading image" });
     }
 
-    const { name, slug, description } = req.body;
+    const { name, slug, description, category } = req.body;
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: "No images uploaded" });
     }
 
-    // Get image filenames
-    // const imageNames = req.files.map(file => file.filename);
-    // Collect URLs of uploaded images
-  const imageFiles = req.files['image'] || [];
-const imageUrls = imageFiles.map(file => file.location); // ✅ Correct way for fields()
-
-    // Create new tyre brand
-    const newTyreBrand = new TyreBrand({
-      name,
-      slug,
-      description,
-      image: imageUrls // Save uploaded images
-    });
-
     try {
-      // Save tyre brand to database
+      // Check for duplicate slug
+      const existingBrand = await TyreBrand.findOne({ slug });
+      if (existingBrand) {
+        return res.status(400).json({ message: `Slug "${slug}" already exists.` });
+      }
+
+      const imageFiles = req.files['image'] || [];
+      const imageUrls = imageFiles.map(file => file.location);
+
+      const newTyreBrand = new TyreBrand({
+        name,
+        slug,
+        description,
+        category,
+        image: imageUrls,
+      });
+
       await newTyreBrand.save();
       res.status(201).json({ message: "Tyre brand added successfully" });
+
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Error saving tyre brand" });
     }
   });
-  }
+};
 
 
 
@@ -113,44 +190,56 @@ const imageUrls = imageFiles.map(file => file.location); // ✅ Correct way for 
 
 
 
-  // const tyreUpdateFunction = async (req,res)=>{
 
-  //   upload(req, res, async function (err) {
-  //     if (err) {
-  //       return res.status(500).json({ message: "Error uploading image" });
-  //     }
-  
-  //     const { id } = req.params;
-  //     const { name, slug, description } = req.body;
-  
-  //     let imageNames = req.body.image || []; // Use existing images if no new ones are uploaded
-  
-  //     if (req.files && req.files.length > 0) {
-  //       imageNames = req.files.map(file => file.filename); // Update with new images if any
-  //     }
-  
-  //     try {
-  //       const updatedBrand = await TyreBrand.findByIdAndUpdate(
-  //         id,
-  //         { name, slug, description, image: imageNames },
-  //         { new: true }
-  //       );
-  
-  //       if (!updatedBrand) {
-  //         return res.status(404).json({ error: 'Tyre brand not found' });
-  //       }
-  
-  //       res.status(200).json({ message: 'Tyre brand updated successfully', updatedBrand });
-  //     } catch (error) {
-  //       console.error('Error updating tyre brand:', error);
-  //       res.status(500).json({ error: 'Failed to update tyre brand' });
-  //     }
-  //   });
 
-  
-    
-  // }
+// const tyreUpdateFunction = async (req, res) => {
+//   upload(req, res, async function (err) {
+//     if (err) {
+//       return res.status(500).json({ message: "Error uploading image" });
+//     }
 
+//     const { id } = req.params;
+//     const { name, slug, description } = req.body;
+
+//     // Use old image URLs from the form if no new files uploaded
+//     let imageUrls = [];
+
+//     // req.body.image may be a single string or array (handle both)
+//     if (req.body.image) {
+//       if (typeof req.body.image === 'string') {
+//         imageUrls = [req.body.image];
+//       } else if (Array.isArray(req.body.image)) {
+//         imageUrls = req.body.image;
+//       }
+//     }
+
+//     // If new images are uploaded, override with new URLs
+//     const imageFiles = req.files['image'] || [];
+//     if (imageFiles.length > 0) {
+//       imageUrls = imageFiles.map(file => file.location);
+//     }
+
+//     try {
+//       const updatedBrand = await TyreBrand.findByIdAndUpdate(
+//         id,
+//         { name, slug, description, image: imageUrls },
+//         { new: true }
+//       );
+
+//       if (!updatedBrand) {
+//         return res.status(404).json({ error: 'Tyre brand not found' });
+//       }
+
+//       res.status(200).json({
+//         message: 'Tyre brand updated successfully',
+//         updatedBrand,
+//       });
+//     } catch (error) {
+//       console.error('Error updating tyre brand:', error);
+//       res.status(500).json({ error: 'Failed to update tyre brand' });
+//     }
+//   });
+// };
 
 
 const tyreUpdateFunction = async (req, res) => {
@@ -160,12 +249,10 @@ const tyreUpdateFunction = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { name, slug, description } = req.body;
+    const { name, slug, description, category } = req.body; // Include category
 
-    // Use old image URLs from the form if no new files uploaded
     let imageUrls = [];
 
-    // req.body.image may be a single string or array (handle both)
     if (req.body.image) {
       if (typeof req.body.image === 'string') {
         imageUrls = [req.body.image];
@@ -174,7 +261,6 @@ const tyreUpdateFunction = async (req, res) => {
       }
     }
 
-    // If new images are uploaded, override with new URLs
     const imageFiles = req.files['image'] || [];
     if (imageFiles.length > 0) {
       imageUrls = imageFiles.map(file => file.location);
@@ -183,7 +269,7 @@ const tyreUpdateFunction = async (req, res) => {
     try {
       const updatedBrand = await TyreBrand.findByIdAndUpdate(
         id,
-        { name, slug, description, image: imageUrls },
+        { name, slug, description, category, image: imageUrls }, // Include category in update
         { new: true }
       );
 
@@ -201,8 +287,6 @@ const tyreUpdateFunction = async (req, res) => {
     }
   });
 };
-
-
 
 
 

@@ -2155,43 +2155,6 @@ const ShowDetails = async (req, res) => {
 
 //----------------------------- dealer categories checkbox api ----------------
 
-// const GetCheckbox = async(req,res) =>{
-//   const { selectedBrands, tyreTypes } = req.query;
-
-//   const filters = {};
-//   const brandsArray = selectedBrands ? JSON.parse(selectedBrands) : {};
-
-//   try {
-//     // Fetch tyres based on tyre type and brand selection
-//     let carTyres = [];
-//     let bikeTyres = [];
-
-//     // Check if car tyre type is selected and filter accordingly
-//     if (tyreTypes && JSON.parse(tyreTypes).car) {
-//       carTyres = await CarTyre.find({
-//         tyreType: 'car',
-//         tyreBrand: { $in: brandsArray.car || [] }
-//       });
-//     }
-
-//     // Check if bike tyre type is selected and filter accordingly
-//     if (tyreTypes && JSON.parse(tyreTypes).bike) {
-//       bikeTyres = await BikeTyre.find({
-//         tyreType: 'bike',
-//         tyreBrand: { $in: brandsArray.bike || [] }
-//       });
-//     }
-
-//     // Combine both car and bike results if both types are selected
-//     const filteredTyres = [...carTyres, ...bikeTyres];
-//     res.json(filteredTyres);
-//   } catch (error) {
-//     res.status(500).json({ error: 'Failed to fetch tyres' });
-//   }
-
-// }
-
-
 
 // const GetCheckbox = async (req, res) => {
 //   const { selectedBrands, tyreTypes } = req.query;
@@ -2200,13 +2163,14 @@ const ShowDetails = async (req, res) => {
 //   const brandsArray = selectedBrands ? JSON.parse(selectedBrands) : {};
 
 //   try {
-//     // Fetch tyres based on tyre type and brand selection
+//     // Fetch tyres and other products based on type and brand selection
 //     let carTyres = [];
 //     let bikeTyres = [];
-//     let truckTyres = []; // New array for truck tyres
-//     let tractorTyres = []; // New array for tractor tyres
+//     let truckTyres = [];
+//     let tractorTyres = [];
+//     let batteries = [];
+//     let alloyWheels = [];
 
-//     // Check if car tyre type is selected and filter accordingly
 //     if (tyreTypes && JSON.parse(tyreTypes).car) {
 //       carTyres = await CarTyre.find({
 //         tyreType: 'car',
@@ -2214,7 +2178,6 @@ const ShowDetails = async (req, res) => {
 //       });
 //     }
 
-//     // Check if bike tyre type is selected and filter accordingly
 //     if (tyreTypes && JSON.parse(tyreTypes).bike) {
 //       bikeTyres = await BikeTyre.find({
 //         tyreType: 'bike',
@@ -2222,7 +2185,6 @@ const ShowDetails = async (req, res) => {
 //       });
 //     }
 
-//     // Check if truck tyre type is selected and filter accordingly
 //     if (tyreTypes && JSON.parse(tyreTypes).truck) {
 //       truckTyres = await TruckTyre.find({
 //         tyreType: 'truck',
@@ -2230,7 +2192,6 @@ const ShowDetails = async (req, res) => {
 //       });
 //     }
 
-//     // Check if tractor tyre type is selected and filter accordingly
 //     if (tyreTypes && JSON.parse(tyreTypes).tractor) {
 //       tractorTyres = await TractorTyre.find({
 //         tyreType: 'tractor',
@@ -2238,72 +2199,102 @@ const ShowDetails = async (req, res) => {
 //       });
 //     }
 
-//     // Combine all results
-//     const filteredTyres = [...carTyres, ...bikeTyres, ...truckTyres, ...tractorTyres];
-//     res.json(filteredTyres);
+//     if (tyreTypes && JSON.parse(tyreTypes).battery) {
+//       batteries = await Battery.find({
+//         tyreType: 'battery', // Assuming you use 'tyreType' field also for battery
+//         tyreBrand: { $in: brandsArray.battery || [] }
+//       });
+//     }
+
+//     if (tyreTypes && JSON.parse(tyreTypes).alloywheel) {
+//       alloyWheels = await AlloyWheel.find({
+//         tyreType: 'alloywheel', // Assuming you use 'tyreType' field also for alloy wheels
+//         tyreBrand: { $in: brandsArray.alloywheel || [] }
+//       });
+//     }
+
+//     // Combine all products
+//     const filteredProducts = [
+//       ...carTyres,
+//       ...bikeTyres,
+//       ...truckTyres,
+//       ...tractorTyres,
+//       ...batteries,
+//       ...alloyWheels,
+//     ];
+
+//     res.json(filteredProducts);
 //   } catch (error) {
-//     res.status(500).json({ error: 'Failed to fetch tyres' });
+//     console.error(error);
+//     res.status(500).json({ error: 'Failed to fetch products' });
 //   }
-// }
+// };
+
 
 const GetCheckbox = async (req, res) => {
   const { selectedBrands, tyreTypes } = req.query;
 
-  const filters = {};
   const brandsArray = selectedBrands ? JSON.parse(selectedBrands) : {};
+  const typeFilters = tyreTypes ? JSON.parse(tyreTypes) : {};
 
   try {
-    // Fetch tyres and other products based on type and brand selection
     let carTyres = [];
     let bikeTyres = [];
     let truckTyres = [];
     let tractorTyres = [];
     let batteries = [];
     let alloyWheels = [];
+    let accessories = [];
 
-    if (tyreTypes && JSON.parse(tyreTypes).car) {
+    if (typeFilters.car) {
       carTyres = await CarTyre.find({
         tyreType: 'car',
         tyreBrand: { $in: brandsArray.car || [] }
       });
     }
 
-    if (tyreTypes && JSON.parse(tyreTypes).bike) {
+    if (typeFilters.bike) {
       bikeTyres = await BikeTyre.find({
         tyreType: 'bike',
         tyreBrand: { $in: brandsArray.bike || [] }
       });
     }
 
-    if (tyreTypes && JSON.parse(tyreTypes).truck) {
+    if (typeFilters.truck) {
       truckTyres = await TruckTyre.find({
         tyreType: 'truck',
         tyreBrand: { $in: brandsArray.truck || [] }
       });
     }
 
-    if (tyreTypes && JSON.parse(tyreTypes).tractor) {
+    if (typeFilters.tractor) {
       tractorTyres = await TractorTyre.find({
         tyreType: 'tractor',
         tyreBrand: { $in: brandsArray.tractor || [] }
       });
     }
 
-    if (tyreTypes && JSON.parse(tyreTypes).battery) {
+    if (typeFilters.battery) {
       batteries = await Battery.find({
-        tyreType: 'battery', // Assuming you use 'tyreType' field also for battery
+        tyreType: 'battery',
         tyreBrand: { $in: brandsArray.battery || [] }
       });
     }
 
-    if (tyreTypes && JSON.parse(tyreTypes).alloywheel) {
+    if (typeFilters.alloywheel) {
       alloyWheels = await AlloyWheel.find({
-        tyreType: 'alloywheel', // Assuming you use 'tyreType' field also for alloy wheels
+        tyreType: 'alloywheel',
         tyreBrand: { $in: brandsArray.alloywheel || [] }
       });
     }
 
-    // Combine all products
+    if (typeFilters.accessories) {
+      accessories = await Accessories.find({
+        tyreType: 'accessories',
+        tyreBrand: { $in: brandsArray.accessories || [] }
+      });
+    }
+
     const filteredProducts = [
       ...carTyres,
       ...bikeTyres,
@@ -2311,6 +2302,7 @@ const GetCheckbox = async (req, res) => {
       ...tractorTyres,
       ...batteries,
       ...alloyWheels,
+      ...accessories,
     ];
 
     res.json(filteredProducts);
@@ -2319,6 +2311,7 @@ const GetCheckbox = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch products' });
   }
 };
+
 
 
 //---------------------------- best deal api ------------------

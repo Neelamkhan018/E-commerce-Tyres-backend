@@ -6,47 +6,6 @@ import { TruckTyre } from "../Models/adminModel.js";
 import upload from "../utils/upload.js"
 
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './uploads'); 
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname)); 
-//   }
-// }); 
-
-// const upload = multer({ storage: storage }).array('image', 10);
-
-// const truckAddFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     const { name, slug, description } = req.body;
-
-//     if (!req.files || req.files.length === 0) {
-//       return res.status(400).json({ message: "No images uploaded" });
-//     }
-
-//     const imageNames = req.files.map(file => file.filename);
-
-//     const newTruckBrand = new TruckBrand({
-//       name,
-//       slug,
-//       description,
-//       image: imageNames
-//     });
-
-//     try {
-//       await newTruckBrand.save();
-//       res.status(201).json({ message: "Truck brand added successfully" });
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).json({ message: "Error saving truck brand" });
-//     }
-//   });
-// };
 
 const truckAddFunction = async (req, res) => {
   upload(req, res, async function (err) {
@@ -101,41 +60,6 @@ const truckGetFunction = async (req, res) => {
 
 
 
-
-
-// const truckUpdateFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     const { id } = req.params;
-//     const { name, slug, description } = req.body;
-
-//     try {
-//       const existingBrand = await TruckBrand.findById(id);
-//       if (!existingBrand) {
-//         return res.status(404).json({ error: 'Truck brand not found' });
-//       }
-
-//       let imageNames = existingBrand.image;
-//       if (req.files && req.files.length > 0) {
-//         imageNames = req.files.map(file => file.filename);
-//       }
-
-//       const updatedBrand = await TruckBrand.findByIdAndUpdate(
-//         id,
-//         { name, slug, description, image: imageNames },
-//         { new: true }
-//       );
-
-//       res.status(200).json({ message: 'Truck brand updated successfully', updatedBrand });
-//     } catch (error) {
-//       console.error('Error updating truck brand:', error);
-//       res.status(500).json({ error: 'Failed to update truck brand' });
-//     }
-//   });
-// };
 
 
 const truckUpdateFunction = async (req, res) => {

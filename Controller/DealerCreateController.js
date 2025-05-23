@@ -87,19 +87,6 @@ const AddCreateDealer = async (req, res) => {
 
 
 
-// const AddcreateOtp = async (req, res) => {
-//   const { mobileNumber, email, type } = req.body;
-
-//   const otp = generateOtp();
-//   if (type === 'mobile') {
-//     otpStore.set(mobileNumber, otp);
-//     return res.status(200).json({ message: "Mobile OTP generated", otp }); // Send OTP back in response
-//   } else if (type === 'email') {
-//     otpStore.set(email, otp);
-//     return res.status(200).json({ message: "Email OTP generated", otp }); // Send OTP back in response
-//   }
-// };
-
 
 const AddcreateOtp = async (req, res) => {
   const { mobileNumber, email, type } = req.body;
@@ -135,37 +122,6 @@ const AddcreateOtp = async (req, res) => {
 
 // ------- Dealer Add Login -----------------
 
-// const AddDealerLogin = async (req, res) => {
-//   const { emailOrMobile } = req.body;
-
-//   try {
-//     const isMobileNumber = /^\d+$/.test(emailOrMobile);
-//     const query = isMobileNumber
-//       ? { mobileNumber: emailOrMobile }
-//       : { email: emailOrMobile };
-
-//     const existingEntry = await dealeraccountModel.findOne(query);
-
-//     if (!existingEntry) {
-//       return res.status(404).json({ message: "Email or mobile number not found." });
-//     }
-
-//     // Generate OTP
-//     const otp = Math.floor(100000 + Math.random() * 900000);
-//     otpStore[emailOrMobile] = otp; // Store OTP in memory
-
-//     console.log(`OTP for ${emailOrMobile}: ${otp}`);
-
-//     return res.status(200).json({
-//       message: `OTP sent to ${emailOrMobile}`,
-//       otp,
-//       clientId: existingEntry._id, // Use _id if clientId is missing
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Something went wrong. Please try again later." });
-//   }
-// };
 
 const AddDealerLogin = async (req, res) => {
   const { emailOrMobile } = req.body;
@@ -215,33 +171,7 @@ const AddDealerLogin = async (req, res) => {
 };
 
 
-// const AddLoginOtp = async(req,res)=>{
 
-//   try {
-//     const { emailOrMobile, otp } = req.body; // Expect email or mobile and OTP
-
-//     // Check if the provided email or mobile number exists in the database
-//     const existingEntry = await dealeraccountModel.findOne({
-//         $or: [{ email: emailOrMobile }, { mobileNumber: emailOrMobile }]
-//     });
-
-//     // If the entry does not exist, send an error response
-//     if (!existingEntry) {
-//         return res.status(404).json({ message: "Email or mobile number not found." });
-//     }
-
-//     // Check if the provided OTP matches the stored OTP
-//     if (otpStore[emailOrMobile] === otp) {
-//         delete otpStore[emailOrMobile]; // Remove the OTP after successful verification
-//         res.status(200).json({ message: "Login successful" });
-//     } else {
-//         res.status(400).json({ message: "Invalid OTP" });
-//     }
-// } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-// }
-
-// }
 
 
 const AddLoginOtp = async (req, res) => {

@@ -5,53 +5,6 @@ import TractorModel from "../Models/TractorModel.js";
 import upload from "../utils/upload.js"
 
 
-// const ObjectId = mongoose.Types.ObjectId;
-
-// // Multer storage configuration
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './uploads');
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname));
-//   }
-// });
-
-// const upload = multer({ storage: storage }).array('image', 10);
-
-// POST - Add Tractor Model
-// const tractorModelFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       console.error('Multer error:', err);
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     const { name, slug, description, brandid } = req.body;
-
-//     if (!req.files || req.files.length === 0) {
-//       return res.status(400).json({ message: "No images uploaded" });
-//     }
-
-//     const imageNames = req.files.map(file => file.filename);
-
-//     const newTractorModel = new TractorModel({
-//       name,
-//       slug,
-//       description,
-//       image: imageNames,
-//       brand_id: brandid
-//     });
-
-//     try {
-//       await newTractorModel.save();
-//       res.status(201).json({ message: "Tractor model added successfully" });
-//     } catch (err) {
-//       console.error('Error saving tractor model:', err);
-//       res.status(500).json({ message: "Error saving tractor model" });
-//     }
-//   });
-// };
 
 
 
@@ -126,45 +79,6 @@ const tractorModelGetFunction = async (req, res) => {
 };
 
 // // PUT - Update Tractor Model
-// const tractorModelUpdateFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       console.error('Multer error:', err);
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     const { id } = req.params;
-//     const { name, slug, description } = req.body;
-
-//     let updatedFields = { name, slug, description };
-
-//     if (req.files && req.files.length > 0) {
-//       const imageNames = req.files.map(file => file.filename);
-//       updatedFields.image = imageNames;
-//     }
-
-//     try {
-//       const updatedTractorModel = await TractorModel.findByIdAndUpdate(
-//         id,
-//         updatedFields,
-//         { new: true }
-//       );
-
-//       if (!updatedTractorModel) {
-//         return res.status(404).json({ error: 'Tractor model not found' });
-//       }
-
-//       res.status(200).json({ message: 'Tractor model updated successfully', updatedTractorModel });
-//     } catch (error) {
-//       console.error('Error updating tractor model:', error);
-//       res.status(500).json({ error: 'Failed to update tractor model' });
-//     }
-//   });
-// };
-
-
-
-
 const tractorModelUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {

@@ -2,65 +2,10 @@
 import mongoose from "mongoose";
 import BikeModel from "../Models/BikeModel.js";
 
-import multer from "multer";
-import path from "path";
+
 
 import upload from "../utils/upload.js"
 
-
-// const ObjectId = mongoose.Types.ObjectId;
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './uploads'); 
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname)); 
-//   }
-// });
-
-// const upload = multer({ storage: storage }).array('image', 10);
-
-// Post API
-// const bikeModelFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       console.error('Multer error:', err); // Log multer error
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     console.log('Form data:', req.body);
-//     console.log('Uploaded files:', req.files); // Log uploaded files
-
-//     const { name, slug, description, brandid } = req.body;
-
-//     // console.log(req.body);
-    
-
-//     if (!req.files || req.files.length === 0) {
-//       return res.status(400).json({ message: "No images uploaded" });
-//     }
-
-//     const imageNames = req.files.map(file => file.filename);
-
-//     // Create new bike model
-//     const newBikeModel = new BikeModel({
-//       name,
-//       slug,
-//       description,
-//       image: imageNames ,
-//       brand_id:brandid
-//     });
-
-//     try {
-//       await newBikeModel.save();
-//       res.status(201).json({ message: "Bike model added successfully" });
-//     } catch (err) {
-//       console.error('Error saving bike model:', err); // Log saving error
-//       res.status(500).json({ message: "Error saving bike model" });
-//     }
-//   });
-// }
 
 const bikeModelFunction = async (req, res) => {
   upload(req, res, async function (err) {
@@ -128,43 +73,6 @@ const bikeModelGetFunction = async (req, res) => {
 
 
 // // Update API
-// const bikeModelUpdateFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       console.error('Multer error:', err); // Log multer error
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     const { id } = req.params;
-//     const { name, slug, description } = req.body;
-
-//     let updatedFields = { name, slug, description };
-
-//     if (req.files && req.files.length > 0) {
-//       const imageNames = req.files.map(file => file.filename);
-//       updatedFields.image = imageNames;
-//     }
-
-//     try {
-//       const updatedBikeModel = await BikeModel.findByIdAndUpdate(
-//         id,
-//         updatedFields,
-//         { new: true } // Return the updated document
-//       );
-
-//       if (!updatedBikeModel) {
-//         return res.status(404).json({ error: 'Bike model not found' });
-//       }
-
-//       res.status(200).json({ message: 'Bike model updated successfully', updatedBikeModel });
-//     } catch (error) {
-//       console.error('Error updating bike model:', error);
-//       res.status(500).json({ error: 'Failed to update bike model' });
-//     }
-//   });
-// }
-
-
 const bikeModelUpdateFunction = async (req, res) => {
   upload(req, res, async function (err) {
     if (err) {

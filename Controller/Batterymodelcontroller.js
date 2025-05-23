@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import BatteryModel from "../Models/BatteryModel.js"; // Import the BatteryModel
-import multer from "multer";
-import path from "path";
+
 
 
 
@@ -9,56 +8,6 @@ import upload from "../utils/upload.js"
 
 
 
-// const ObjectId = mongoose.Types.ObjectId;
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './uploads'); 
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname)); 
-//   }
-// });
-
-// const upload = multer({ storage: storage }).array('image', 10);
-
-// Post API for BatteryModel
-// const batteryModelFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       console.error('Multer error:', err);
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     console.log('Form data:', req.body);
-//     console.log('Uploaded files:', req.files);
-
-//     const { name, slug, description, brandid } = req.body;
-
-//     if (!req.files || req.files.length === 0) {
-//       return res.status(400).json({ message: "No images uploaded" });
-//     }
-
-//     const imageNames = req.files.map(file => file.filename);
-
-//     // Create new battery model
-//     const newBatteryModel = new BatteryModel({
-//       name,
-//       slug,
-//       description,
-//       image: imageNames,
-//       brand_id: brandid
-//     });
-
-//     try {
-//       await newBatteryModel.save();
-//       res.status(201).json({ message: "Battery model added successfully" });
-//     } catch (err) {
-//       console.error('Error saving battery model:', err);
-//       res.status(500).json({ message: "Error saving battery model" });
-//     }
-//   });
-// }
 
 
 
@@ -132,42 +81,6 @@ const batteryModelGetFunction = async (req, res) => {
   }
 };
 
-// // Update API for BatteryModel
-// const batteryModelUpdateFunction = async (req, res) => {
-//   upload(req, res, async function (err) {
-//     if (err) {
-//       console.error('Multer error:', err);
-//       return res.status(500).json({ message: "Error uploading image" });
-//     }
-
-//     const { id } = req.params;
-//     const { name, slug, description } = req.body;
-
-//     let updatedFields = { name, slug, description };
-
-//     if (req.files && req.files.length > 0) {
-//       const imageNames = req.files.map(file => file.filename);
-//       updatedFields.image = imageNames;
-//     }
-
-//     try {
-//       const updatedBatteryModel = await BatteryModel.findByIdAndUpdate(
-//         id,
-//         updatedFields,
-//         { new: true }
-//       );
-
-//       if (!updatedBatteryModel) {
-//         return res.status(404).json({ error: 'Battery model not found' });
-//       }
-
-//       res.status(200).json({ message: 'Battery model updated successfully', updatedBatteryModel });
-//     } catch (error) {
-//       console.error('Error updating battery model:', error);
-//       res.status(500).json({ error: 'Failed to update battery model' });
-//     }
-//   });
-// }
 
 
 

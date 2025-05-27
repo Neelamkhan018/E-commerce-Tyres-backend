@@ -288,243 +288,219 @@ const addProductFunction = async (req, res) => {
 
 const showProductFunction = async (req, res) => {
   try {
-    // Fetch all car tyres, bike tyres, truck tyres, tractor tyres, batteries, alloy wheels, and accessories asynchronously
-    const [carTyres, bikeTyres, truckTyres, tractorTyres, batteries, alloyWheels, accessories] = await Promise.all([
-      CarTyre.find().exec(),
-      BikeTyre.find().exec(),
-      TruckTyre.find().exec(),
-      TractorTyre.find().exec(),
-      Battery.find().exec(),
-      AlloyWheel.find().exec(),
-      Accessories.find().exec()
+    // Step 1: Fetch all products in parallel
+    const [
+      carTyres, bikeTyres, truckTyres, tractorTyres,
+      batteries, alloyWheels, accessories
+    ] = await Promise.all([
+      CarTyre.find().lean().exec(),
+      BikeTyre.find().lean().exec(),
+      TruckTyre.find().lean().exec(),
+      TractorTyre.find().lean().exec(),
+      Battery.find().lean().exec(),
+      AlloyWheel.find().lean().exec(),
+      Accessories.find().lean().exec()
     ]);
 
-    // Helper function to validate if an ID is a valid ObjectId
-    const isValidObjectId = (id) => {
-      return ObjectId.isValid(id) && String(new ObjectId(id)) === id;
+    // Step 2: Fetch all brand/model data in parallel
+    // List all involved brand/model collections
+    const [
+      carBrands, carModels,
+      bikeBrands, bikeModels,
+      truckBrands, truckModels,
+      tractorBrands, tractorModels,
+      batteryBrands, batteryModels,
+      alloyBrands, alloyModels,
+      accessoryBrands, accessoryModels,
+      tyreBrands
+    ] = await Promise.all([
+      CarBrand.find().lean().exec(), CarModel.find().lean().exec(),
+      BikeBrand.find().lean().exec(), BikeModel.find().lean().exec(),
+      TruckBrand.find().lean().exec(), TruckModel.find().lean().exec(),
+      TractorBrand.find().lean().exec(), TractorModel.find().lean().exec(),
+      BatteryBrand.find().lean().exec(), BatteryModel.find().lean().exec(),
+      AlloyWheelBrand.find().lean().exec(), AlloyWheelModel.find().lean().exec(),
+      AccessoriesBrand.find().lean().exec(), AccessoriesModel.find().lean().exec(),
+      TyreBrand.find().lean().exec()
+    ]);
+
+    // Step 3: Build lookup maps ID -> name for each brand/model
+    const buildLookup = (arr) => {
+      const map = new Map();
+      arr.forEach(item => map.set(item._id.toString(), item.name));
+      return map;
     };
 
-    // Helper function to map valid brand or model IDs to names
-    const getNamesByIds = async (ids, model) => {
-      const names = await Promise.all(
-        ids
-          .filter(isValidObjectId)  // Filter out invalid ObjectIds
-          .map(async (id) => {
-            const item = await model.findOne({ _id: new ObjectId(id) });
-            return item ? item.name : null;
-          })
-      );
-      return names.filter((name) => name); // Remove null values if any
-    };
+    const carBrandMap = buildLookup(carBrands);
+    const carModelMap = buildLookup(carModels);
+    const bikeBrandMap = buildLookup(bikeBrands);
+    const bikeModelMap = buildLookup(bikeModels);
+    const truckBrandMap = buildLookup(truckBrands);
+    const truckModelMap = buildLookup(truckModels);
+    const tractorBrandMap = buildLookup(tractorBrands);
+    const tractorModelMap = buildLookup(tractorModels);
+    const batteryBrandMap = buildLookup(batteryBrands);
+    const batteryModelMap = buildLookup(batteryModels);
+    const alloyBrandMap = buildLookup(alloyBrands);
+    const alloyModelMap = buildLookup(alloyModels);
+    const accessoryBrandMap = buildLookup(accessoryBrands);
+    const accessoryModelMap = buildLookup(accessoryModels);
+    const tyreBrandMap = buildLookup(tyreBrands);
 
-    // Helper function to safely split and process IDs
+    // Helper: split IDs safely and return array of strings
     const safeSplit = (value) => {
-      if (value && typeof value === 'string') {
-        return value.split(",");
-      } else if (Array.isArray(value)) {
-        return value;  // If it's already an array, return it as is
-      }
-      return [];  // Return an empty array for any other case
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'string') return value.split(',').map(id => id.trim());
+      return [];
     };
 
-    // Update car tyres with corresponding brand, model, and tyre brand names
-    const updatedCarTyres = await Promise.all(
-      (carTyres || []).map(async (tyre) => {
-        const carBrandIds = safeSplit(tyre.carbrand && tyre.carbrand[0]);
-        const carModelIds = safeSplit(tyre.carModel && tyre.carModel[0]);
-        const tyreBrandIds = safeSplit(tyre.tyreBrand && tyre.tyreBrand[0]);
+    // Helper: map IDs to names using lookup map
+    const mapIdsToNames = (ids, lookupMap) =>
+      ids.map(id => lookupMap.get(id)).filter(Boolean);
 
-        const carBrandNames = await getNamesByIds(carBrandIds, CarBrand);
-        const carModelNames = await getNamesByIds(carModelIds, CarModel);
-        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
-
-        return {
-          ...tyre.toObject(),
-          carbrand: carBrandNames,
-          carModel: carModelNames,
-          tyreBrand: tyreBrandNames,
-        };
-      })
-    );
-
-    // Update bike tyres with corresponding brand, model, and tyre brand names
-    const updatedBikeTyres = await Promise.all(
-      (bikeTyres || []).map(async (tyre) => {
-        const bikeBrandIds = safeSplit(tyre.bikeBrand && tyre.bikeBrand[0]);
-        const bikeModelIds = safeSplit(tyre.bikeModel && tyre.bikeModel[0]);
-        const tyreBrandIds = safeSplit(tyre.tyreBrand && tyre.tyreBrand[0]);
-
-        const bikeBrandNames = await getNamesByIds(bikeBrandIds, BikeBrand);
-        const bikeModelNames = await getNamesByIds(bikeModelIds, BikeModel);
-        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
-
-        return {
-          ...tyre.toObject(),
-          bikeBrand: bikeBrandNames,
-          bikeModel: bikeModelNames,
-          tyreBrand: tyreBrandNames,
-        };
-      })
-    );
-
-    // Update truck tyres with corresponding brand, model, and tyre brand names
-    const updatedTruckTyres = await Promise.all(
-      (truckTyres || []).map(async (tyre) => {
-        const truckBrandIds = safeSplit(tyre.truckBrand && tyre.truckBrand[0]);
-        const truckModelIds = safeSplit(tyre.truckModel && tyre.truckModel[0]);
-        const tyreBrandIds = safeSplit(tyre.tyreBrand && tyre.tyreBrand[0]);
-
-        const truckBrandNames = await getNamesByIds(truckBrandIds, TruckBrand);
-        const truckModelNames = await getNamesByIds(truckModelIds, TruckModel);
-        const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
-
-        return {
-          ...tyre.toObject(),
-            truckBrand: truckBrandNames,
-            truckModel: truckModelNames,
-            tyreBrand: tyreBrandNames,
-          };
-        })
-      );
-  
-      // Update tractor tyres with corresponding brand, model, and tyre brand names
-      const updatedTractorTyres = await Promise.all(
-        (tractorTyres || []).map(async (tyre) => {
-          const tractorBrandIds = safeSplit(tyre.tractorBrand && tyre.tractorBrand[0]);
-          const tractorModelIds = safeSplit(tyre.tractorModel && tyre.tractorModel[0]);
-          const tyreBrandIds = safeSplit(tyre.tyreBrand && tyre.tyreBrand[0]);
-  
-          const tractorBrandNames = await getNamesByIds(tractorBrandIds, TractorBrand);
-          const tractorModelNames = await getNamesByIds(tractorModelIds, TractorModel);
-          const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
-  
-          return {
-            ...tyre.toObject(),
-            tractorBrand: tractorBrandNames,
-            tractorModel: tractorModelNames,
-            tyreBrand: tyreBrandNames,
-          };
-        })
-      );
-  
-      // Update batteries with corresponding brand, model, and tyre brand names
-      const updatedBatteries = await Promise.all(
-        (batteries || []).map(async (battery) => {
-          const batteryBrandIds = safeSplit(battery.BatteryBrand && battery.BatteryBrand[0]);
-          const batteryModelIds = safeSplit(battery.BatteryModel && battery.BatteryModel[0]);
-          const tyreBrandIds = safeSplit(battery.tyreBrand && battery.tyreBrand[0]);
-  
-          const batteryBrandNames = await getNamesByIds(batteryBrandIds, BatteryBrand);
-          const batteryModelNames = await getNamesByIds(batteryModelIds, BatteryModel);
-          const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
-  
-          let carbrandNames = [];
-          let carModelNames = [];
-          let bikeBrandNames = [];
-          let bikeModelNames = [];
-  
-          if (battery.batteryType === 'car') {
-            const selectedCarBrandIds = safeSplit(battery.carbrand);
-            const selectedCarModelIds = safeSplit(battery.carModel);
-  
-            carbrandNames = await getNamesByIds(selectedCarBrandIds, CarBrand);
-            carModelNames = await getNamesByIds(selectedCarModelIds, CarModel);
-          } else if (battery.batteryType === 'bike') {
-            const selectedBikeBrandIds = safeSplit(battery.bikeBrand);
-            const selectedBikeModelIds = safeSplit(battery.bikeModel);
-  
-            bikeBrandNames = await getNamesByIds(selectedBikeBrandIds, BikeBrand);
-            bikeModelNames = await getNamesByIds(selectedBikeModelIds, BikeModel);
+    // Helper to replace brand/model IDs with names in product object fields
+    // Accepts an object with keys = field names in product, values = lookups
+    // Uses first element of array field as string of comma separated IDs (based on original code)
+    const replaceIdsWithNames = (product, fieldToLookupMap) => {
+      const newObj = { ...product };
+      for (const [field, lookupMap] of Object.entries(fieldToLookupMap)) {
+        let ids = [];
+        if (Array.isArray(product[field])) {
+          // original code uses product[field][0] with safeSplit if it's string
+          if (product[field][0]) {
+            ids = safeSplit(product[field][0]);
           }
-  
-          return {
-            ...battery.toObject(),
-            BatteryBrand: batteryBrandNames,
-            BatteryModel: batteryModelNames,
-            tyreBrand: tyreBrandNames,
-            carbrand: carbrandNames,
-            carModel: carModelNames,
-            bikeBrand: bikeBrandNames,
-            bikeModel: bikeModelNames,
-          };
-        })
-      );
-  
-      // Update alloy wheels with corresponding brand and model names
-      const updatedAlloyWheels = await Promise.all(
-        (alloyWheels || []).map(async (wheel) => {
-          const alloyBrandIds = safeSplit(wheel.alloywheelBrand && wheel.alloywheelBrand[0]);
-          const alloyModelIds = safeSplit(wheel.alloywheelModel && wheel.alloywheelModel[0]);
-          const tyreBrandIds = safeSplit(wheel.tyreBrand && wheel.tyreBrand[0]);
-  
-          const alloyBrandNames = await getNamesByIds(alloyBrandIds, AlloyWheelBrand);
-          const alloyModelNames = await getNamesByIds(alloyModelIds, AlloyWheelModel);
-          const tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand);
-  
-          let carbrandNames = [];
-          let carModelNames = [];
-          let bikeBrandNames = [];
-          let bikeModelNames = [];
-  
-          if (wheel.alloywheelType === 'car') {
-            const selectedCarBrandIds = safeSplit(wheel.carbrand);
-            const selectedCarModelIds = safeSplit(wheel.carModel);
-  
-            carbrandNames = await getNamesByIds(selectedCarBrandIds, CarBrand);
-            carModelNames = await getNamesByIds(selectedCarModelIds, CarModel);
-          } else if (wheel.alloywheelType === 'bike') {
-            const selectedBikeBrandIds = safeSplit(wheel.bikeBrand);
-            const selectedBikeModelIds = safeSplit(wheel.bikeModel);
-  
-            bikeBrandNames = await getNamesByIds(selectedBikeBrandIds, BikeBrand);
-            bikeModelNames = await getNamesByIds(selectedBikeModelIds, BikeModel);
+        } else {
+          ids = safeSplit(product[field]);
         }
+        newObj[field] = mapIdsToNames(ids, lookupMap);
+      }
+      return newObj;
+    };
 
-        return {
-          ...wheel.toObject(),
-          alloywheelBrand: alloyBrandNames,
-          alloywheelModel: alloyModelNames,
-          tyreBrand: tyreBrandNames,
-          carbrand: carbrandNames,
-          carModel: carModelNames,
-          bikeBrand: bikeBrandNames,
-          bikeModel: bikeModelNames,
-        };
+    // Now process products with correct mappings
+
+    // Car tyres
+    const updatedCarTyres = carTyres.map(tyre =>
+      replaceIdsWithNames(tyre, {
+        carbrand: carBrandMap,
+        carModel: carModelMap,
+        tyreBrand: tyreBrandMap
       })
     );
 
-// Update accessories with corresponding brand and model names
-const updatedAccessories = await Promise.all(
-  (accessories || []).map(async (accessory) => {
-    const accessoryBrandIds = safeSplit(accessory.accessoryBrand && accessory.accessoryBrand[0]);
-    const accessoryModelIds = safeSplit(accessory.accessoryModel && accessory.accessoryModel[0]);
-    const tyreBrandIds = safeSplit(accessory.tyreBrand && accessory.tyreBrand[0]);
+    // Bike tyres
+    const updatedBikeTyres = bikeTyres.map(tyre =>
+      replaceIdsWithNames(tyre, {
+        bikeBrand: bikeBrandMap,
+        bikeModel: bikeModelMap,
+        tyreBrand: tyreBrandMap
+      })
+    );
 
-    let accessoryBrandNames = [];
-    let accessoryModelNames = [];
-    let tyreBrandNames = [];
+    // Truck tyres
+    const updatedTruckTyres = truckTyres.map(tyre =>
+      replaceIdsWithNames(tyre, {
+        truckBrand: truckBrandMap,
+        truckModel: truckModelMap,
+        tyreBrand: tyreBrandMap
+      })
+    );
 
-    // Check the accessory type and fetch the corresponding brand and model names
-    if (accessory.accessoryType === 'car' || accessory.accessoryType === 'bike') {
-      accessoryBrandNames = await getNamesByIds(accessoryBrandIds, AccessoriesBrand);
-      accessoryModelNames = await getNamesByIds(accessoryModelIds, AccessoriesModel);
-    }
+    // Tractor tyres
+    const updatedTractorTyres = tractorTyres.map(tyre =>
+      replaceIdsWithNames(tyre, {
+        tractorBrand: tractorBrandMap,
+        tractorModel: tractorModelMap,
+        tyreBrand: tyreBrandMap
+      })
+    );
 
-    // Fetch tyre brand names regardless of accessory type
-    tyreBrandNames = await getNamesByIds(tyreBrandIds, TyreBrand); // <-- Make sure TyreBrand is imported
+    // Batteries need some extra mapping for car/bike depending on batteryType
+    const updatedBatteries = batteries.map(battery => {
+      const updatedBattery = replaceIdsWithNames(battery, {
+        BatteryBrand: batteryBrandMap,
+        BatteryModel: batteryModelMap,
+        tyreBrand: tyreBrandMap
+      });
 
-    // Return the updated accessory object with the correct brand and model names
-    return {
-      ...accessory.toObject(),
-      accessoryBrand: accessoryBrandNames,
-      accessoryModel: accessoryModelNames,
-      tyreBrand: tyreBrandNames,
-    };
-  })
-);
+      let carbrand = [];
+      let carModel = [];
+      let bikeBrand = [];
+      let bikeModel = [];
 
+      if (battery.batteryType === 'car') {
+        carbrand = mapIdsToNames(safeSplit(battery.carbrand), carBrandMap);
+        carModel = mapIdsToNames(safeSplit(battery.carModel), carModelMap);
+      } else if (battery.batteryType === 'bike') {
+        bikeBrand = mapIdsToNames(safeSplit(battery.bikeBrand), bikeBrandMap);
+        bikeModel = mapIdsToNames(safeSplit(battery.bikeModel), bikeModelMap);
+      }
 
-    // Combine updated car, bike, truck, tractor tyres, batteries, alloy wheels, and accessories
+      return {
+        ...updatedBattery,
+        carbrand,
+        carModel,
+        bikeBrand,
+        bikeModel
+      };
+    });
+
+    // Alloy wheels similarly
+    const updatedAlloyWheels = alloyWheels.map(wheel => {
+      const updatedWheel = replaceIdsWithNames(wheel, {
+        alloywheelBrand: alloyBrandMap,
+        alloywheelModel: alloyModelMap,
+        tyreBrand: tyreBrandMap
+      });
+
+      let carbrand = [];
+      let carModel = [];
+      let bikeBrand = [];
+      let bikeModel = [];
+
+      if (wheel.alloywheelType === 'car') {
+        carbrand = mapIdsToNames(safeSplit(wheel.carbrand), carBrandMap);
+        carModel = mapIdsToNames(safeSplit(wheel.carModel), carModelMap);
+      } else if (wheel.alloywheelType === 'bike') {
+        bikeBrand = mapIdsToNames(safeSplit(wheel.bikeBrand), bikeBrandMap);
+        bikeModel = mapIdsToNames(safeSplit(wheel.bikeModel), bikeModelMap);
+      }
+
+      return {
+        ...updatedWheel,
+        carbrand,
+        carModel,
+        bikeBrand,
+        bikeModel
+      };
+    });
+
+    // Accessories need accessoryBrand and accessoryModel and tyreBrand replacements
+    // But only if accessoryType is car or bike
+    const updatedAccessories = accessories.map(accessory => {
+      const updatedAccessory = { ...accessory };
+
+      let accessoryBrandNames = [];
+      let accessoryModelNames = [];
+
+      if (accessory.accessoryType === 'car' || accessory.accessoryType === 'bike') {
+        accessoryBrandNames = mapIdsToNames(safeSplit(accessory.accessoryBrand && accessory.accessoryBrand[0]), accessoryBrandMap);
+        accessoryModelNames = mapIdsToNames(safeSplit(accessory.accessoryModel && accessory.accessoryModel[0]), accessoryModelMap);
+      }
+
+      const tyreBrandNames = mapIdsToNames(safeSplit(accessory.tyreBrand && accessory.tyreBrand[0]), tyreBrandMap);
+
+      return {
+        ...updatedAccessory,
+        accessoryBrand: accessoryBrandNames,
+        accessoryModel: accessoryModelNames,
+        tyreBrand: tyreBrandNames
+      };
+    });
+
+    // Combine updated products
     const products = [
       ...updatedCarTyres,
       ...updatedBikeTyres,
@@ -532,10 +508,9 @@ const updatedAccessories = await Promise.all(
       ...updatedTractorTyres,
       ...updatedBatteries,
       ...updatedAlloyWheels,
-      ...updatedAccessories,
+      ...updatedAccessories
     ];
 
-    // Send response with the combined product data
     res.send(products);
   } catch (err) {
     console.error(err);
@@ -544,7 +519,6 @@ const updatedAccessories = await Promise.all(
 };
 
 
- 
 // --------------------- update show form  previous data ------------------------------
 
 
